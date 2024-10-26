@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.hope.socialmediaemotiondetection" />
+                  <option name="mobileSdkAppId" value="1:81209221400:android:2e8a4cb5f9786024aa3e6d" />
+                  <option name="projectId" value="socialmediaemotiondetection" />
+                  <option name="projectNumber" value="81209221400" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

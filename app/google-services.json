@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81209221400",
+    "project_id": "socialmediaemotiondetection",
+    "storage_bucket": "socialmediaemotiondetection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81209221400:android:2e8a4cb5f9786024aa3e6d",
+        "android_client_info": {
+          "package_name": "com.hope.socialmediaemotiondetection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4eFvDQnhtC4H-TLfFsxkAtHfHo9fn1vA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
