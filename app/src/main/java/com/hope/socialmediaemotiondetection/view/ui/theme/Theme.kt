@@ -1,4 +1,4 @@
-package com.hope.socialmediaemotiondetection.ui.theme
+package com.hope.socialmediaemotiondetection.view.ui.theme
 
 import android.app.Activity
 import android.os.Build
