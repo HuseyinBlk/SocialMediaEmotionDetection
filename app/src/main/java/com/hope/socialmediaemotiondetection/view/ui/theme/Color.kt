@@ -28,3 +28,21 @@ val PrimaryGreen = Color(0xFF00c29f)
 val PrimaryGreenDark = Color(0xFF008b6c)
 
 val DarkTextColor = Color(0xFF132b4c)
+
+//val renk1 = Color(0xFFb6ccfe)
+//val renk2 = Color(0xFFccdbfd)
+//val renk3 = Color(0xFFd7e3fc)
+//val renk4 = Color(0xFFedf2fb)
+//val renk5= Color(0xFF85a7ff)
+//PEMBE-MAVİ
+//val renk1 = Color(0xFFffd6ff)
+//val renk2 = Color(0xFFe7c6ff)
+//val renk3 = Color(0xFFc8b6ff)
+//val renk4 = Color(0xFFb8c0ff)
+//val renk5= Color(0xFFbbd0ff)
+//
+val renk1 = Color(0xFF00a6fb)
+val renk2 = Color(0xFF0582ca)
+val renk3 = Color(0xFF006494)
+val renk4 = Color(0xFF003554)
+val renk5= Color(0xFF051923)

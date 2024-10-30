@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
+import com.hope.socialmediaemotiondetection.view.Login.InfoScreen
 import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
 
 class MainActivity : ComponentActivity() {
@@ -18,3 +19,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
