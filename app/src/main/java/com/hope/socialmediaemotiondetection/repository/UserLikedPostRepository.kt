@@ -3,7 +3,6 @@ package com.hope.socialmediaemotiondetection.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.hope.socialmediaemotiondetection.model.user.likedPost.LikedPost
 import kotlinx.coroutines.tasks.await
 
 class UserLikedPostRepository (
