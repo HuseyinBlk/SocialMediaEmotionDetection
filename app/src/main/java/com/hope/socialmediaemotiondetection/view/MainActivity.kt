@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 import com.hope.socialmediaemotiondetection.view.Login.InfoScreen
 import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
+import com.hope.socialmediaemotiondetection.view.registration.RegistrationScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SocialMediaEmotionDetectionTheme {
-                LoginScreen()
+                RegistrationScreen()
             }
         }
     }
