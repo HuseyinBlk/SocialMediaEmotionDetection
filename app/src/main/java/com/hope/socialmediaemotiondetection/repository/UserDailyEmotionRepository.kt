@@ -5,8 +5,9 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hope.socialmediaemotiondetection.model.user.dailyEmotion.DailyEmotion
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class UserDailyEmotionRepository (
+class UserDailyEmotionRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ){

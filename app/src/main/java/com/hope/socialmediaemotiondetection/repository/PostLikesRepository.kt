@@ -6,8 +6,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.hope.socialmediaemotiondetection.model.post.likes.Like
 import com.hope.socialmediaemotiondetection.model.post.likes.PostLikes
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class PostLikesRepository(
+class PostLikesRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) {
