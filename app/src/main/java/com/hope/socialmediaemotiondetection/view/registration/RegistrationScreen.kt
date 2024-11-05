@@ -80,13 +80,6 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(40.dp))
 
         InputField(
-            leadingIconRes = R.drawable.avatar,
-            placeholderText = "username",
-            modifier = Modifier.padding(horizontal = 30.dp)
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        InputField(
             leadingIconRes = R.drawable.baseline_alternate_email_24,
             placeholderText = "email",
             modifier = Modifier.padding(horizontal = 30.dp)
