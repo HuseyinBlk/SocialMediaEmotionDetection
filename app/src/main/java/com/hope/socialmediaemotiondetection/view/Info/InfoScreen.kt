@@ -1,4 +1,4 @@
-package com.hope.socialmediaemotiondetection.view.Login
+package com.hope.socialmediaemotiondetection.view.Info
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,25 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
-import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryVioletDark
-import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryYellowDark
-import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryYellowLight
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
-
-@Preview
 @Composable
 fun InfoScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ){
     Column (
         modifier = Modifier
@@ -89,9 +84,9 @@ fun InfoScreen(
             verticalAlignment = Alignment.CenterVertically
         ){
             ActionButton(
-                text ="Sign Up" ,
+                text ="Log In" ,
                 isNavigationArrowVisible = true,
-                onClicked = { },
+                onClicked = {navController.navigate("loginScreen")},
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
                     containerColor = renk3
@@ -105,7 +100,7 @@ fun InfoScreen(
             ActionButton(
                 text ="Sign In" ,
                 isNavigationArrowVisible = true,
-                onClicked = { },
+                onClicked = {navController.navigate("registerScreen") },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
                     containerColor = renk3
