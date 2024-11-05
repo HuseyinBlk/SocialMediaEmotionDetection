@@ -2,6 +2,7 @@ package com.hope.socialmediaemotiondetection.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.WriteBatch
 import com.hope.socialmediaemotiondetection.model.user.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -14,13 +15,13 @@ class UserRepository @Inject constructor(
     TRY CATCH EKLE UNUTMA
      */
 
-    suspend fun registerUserDetails(username: String) {
+    suspend fun registerUserDetails(username: String, profileImage : String? , bio: String? , interests: List<String?>?): Result<Boolean> {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val usernameCheckResult = isUsernameControl(username)
             if (usernameCheckResult.isSuccess && usernameCheckResult.getOrNull() == true) {
                 println("Username already taken. Please choose a different username.")
-                return
+                return Result.failure(Exception("Kullanıcı adı zaten alınmış."))
             }
 
             val userId = currentUser.uid
@@ -28,15 +29,24 @@ class UserRepository @Inject constructor(
                 userId = userId,
                 username = username,
                 email = currentUser.email ?: "",
-                profileImage = null,
-                bio = null,
-                interests = emptyList()
+                profileImage = profileImage,
+                bio = bio,
+                interests = interests ?: emptyList()
             )
 
-            saveUserToFireStore(newUser)
-            saveUsernameToFirestore(username, userId)
+            val batch = firestore.batch()
+            return try {
+                saveUserToFireStore(batch, newUser)
+                saveUsernameToFirestore(batch, username, userId)
+                batch.commit().await()
+                Result.success(true)
+            } catch (e: Exception) {
+                println("Error saving user details: ${e.message}")
+                Result.failure(e)
+            }
         } else {
             println("User is not logged in.")
+            return Result.failure(Exception("User is not logged in."))
         }
     }
 
@@ -50,13 +60,11 @@ class UserRepository @Inject constructor(
         }
     }
 
-    private suspend fun saveUsernameToFirestore(username: String, userId: String) {
-        try {
-            firestore.collection("usernames").document(username).set(mapOf("userId" to userId)).await()
-        } catch (e: Exception) {
-            println("Error saving username: ${e.message}")
-        }
+    private fun saveUsernameToFirestore(batch: WriteBatch, username: String, userId: String) {
+        val usernameRef = firestore.collection("usernames").document(username)
+        batch.set(usernameRef, mapOf("userId" to userId))
     }
+
 
     private suspend fun updateUsernameInFirestore(oldUsername: String, newUsername: String, userId: String) {
         try {
@@ -71,7 +79,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateUser(username: String? = null, bio: String? = null, interests: List<String?>? = null) {
+    suspend fun updateUser(username: String? = null, bio: String? = null, interests: List<String?>? = null) : Result<Boolean> {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
@@ -83,7 +91,7 @@ class UserRepository @Inject constructor(
                     val updatedUsername = username ?: existingUser.username
                     if (updatedUsername != existingUser.username && isUsernameControl(updatedUsername).isSuccess) {
                         println("New username is already taken.")
-                        return
+                        return Result.failure(Exception("New username is already taken."))
                     }
 
                     val updatedUser = User(
@@ -94,25 +102,28 @@ class UserRepository @Inject constructor(
                         bio = bio ?: existingUser.bio,
                         interests = interests ?: existingUser.interests
                     )
-
                     updateUserInFirestore(updatedUser)
+                    return Result.success(true)
                 }
-            } else {
-                println("Error fetching user: ${result.exceptionOrNull()?.message}")
+                else{
+                    return Result.failure(Exception("Unexpected error"))
+                }
             }
-        } else {
+            else {
+                println("Error fetching user: ${result.exceptionOrNull()?.message}")
+                return Result.failure(Exception("Error fetching user: ${result.exceptionOrNull()?.message}"))
+            }
+        }
+        else {
             println("User is not logged in.")
+            return Result.failure(Exception("User is not logged in."))
         }
     }
 
-    private suspend fun saveUserToFireStore(user: User) {
-        try {
-            firestore.collection("users").document(user.userId).set(user).await()
-        } catch (e: Exception) {
-            println("Error saving user: ${e.message}")
-        }
+    private fun saveUserToFireStore(batch: WriteBatch, user: User) {
+        val userRef = firestore.collection("users").document(user.userId)
+        batch.set(userRef, user)
     }
-
     private suspend fun updateUserInFirestore(user: User) {
         try {
             firestore.collection("users").document(user.userId).set(user).await()
@@ -134,6 +145,10 @@ class UserRepository @Inject constructor(
         }
     }
 
+
+    /*
+    Hata ihtimali
+     */
     suspend fun getUserNameFromFirestore(username: String): Result<User?> {
         return try {
             val usernameDocument = firestore.collection("usernames").document(username).get().await()
