@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.hope.socialmediaemotiondetection"
         minSdk = 26
-        targetSdk = 34
+        targetSdk= 34
         versionCode = 1
         versionName = "1.0"
 

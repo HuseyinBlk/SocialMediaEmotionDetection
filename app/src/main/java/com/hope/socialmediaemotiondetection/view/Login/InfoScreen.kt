@@ -61,6 +61,7 @@ fun InfoScreen(
             modifier = Modifier
                 .size(400.dp)
                 .padding(top = 32.dp)
+                .padding(horizontal = 20.dp)
 
 
         )
@@ -71,7 +72,7 @@ fun InfoScreen(
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 12.dp),
-            color = DarkTextColor
+            color = Color.White
         )
         Spacer(modifier = Modifier
             .height(16.dp))
@@ -79,7 +80,7 @@ fun InfoScreen(
             textAlign = TextAlign.Center,
             fontSize =21.sp,
             modifier = Modifier.padding(horizontal = 24.dp),
-            color = DarkTextColor
+            color = Color.White
         )
         Spacer(modifier = Modifier.height(150.dp))
         Row (
@@ -93,7 +94,7 @@ fun InfoScreen(
                 onClicked = { },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
-                    containerColor = renk5
+                    containerColor = renk3
                 ),
                 shadowColor = PrimaryVioletDark,
                 modifier = Modifier
@@ -107,7 +108,7 @@ fun InfoScreen(
                 onClicked = { },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
-                    containerColor = renk5
+                    containerColor = renk3
                 ),
                 shadowColor = PrimaryVioletDark,
                 modifier = Modifier

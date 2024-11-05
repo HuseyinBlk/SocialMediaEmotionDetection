@@ -1,11 +1,10 @@
-package com.hope.socialmediaemotiondetection.view.Login
+package com.hope.socialmediaemotiondetection.view.registration
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,18 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
@@ -54,9 +46,10 @@ import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
 
 @Preview
 @Composable
-fun LoginScreen(
-    modifier: Modifier = Modifier
-){
+fun RegistrationScreen(
+    modifier: Modifier= Modifier,
+
+    ){
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -73,18 +66,25 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
 
     ){
-        Image(painter = painterResource(R.drawable.avatar),
+        Image(painter = painterResource(R.drawable.registerscreenphoto),
             contentDescription =null,
             modifier = Modifier
-                .padding(top = 100.dp)
-                .size(100.dp)
+                .padding(top = 10.dp)
+                .size(300.dp)
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Message(
-            title = "Welcome Back !",
-            subtitle = "Please Login."
+            title = "Welcome Aboard !",
+            subtitle = "Don't let anything upset you."
         )
-        Spacer(modifier = Modifier.height(70.dp))
+        Spacer(modifier = Modifier.height(40.dp))
+
+        InputField(
+            leadingIconRes = R.drawable.avatar,
+            placeholderText = "username",
+            modifier = Modifier.padding(horizontal = 30.dp)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
 
         InputField(
             leadingIconRes = R.drawable.baseline_alternate_email_24,
@@ -102,7 +102,7 @@ fun LoginScreen(
         )
         Spacer(modifier.height(30.dp))
         ActionButton(
-            text = "Login",
+            text = "Register",
             isNavigationArrowVisible = false,
             onClicked = { /*TODO*/ },
             colors = ButtonDefaults.buttonColors(
@@ -112,34 +112,7 @@ fun LoginScreen(
             shadowColor = renk5,
             modifier = Modifier.padding(horizontal = 50.dp)
         )
-        Spacer(modifier = Modifier.height(15.dp))
-        ClickableText(
-            text = AnnotatedString("Hesabın yoksa tıklayarak Kayıt Ol!"),
-            onClick = { offset ->
-                // "Kayıt Ol" tıklama olayını işleme
-                // TODO: Kayıt ol ekranına yönlendirme işlemi eklenebilir
-            },
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center,
 
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(text = "Diğer giriş seçenekleri",
-            style = TextStyle(
-                color = Color.White,
-
-            )
-        )
-        Row{
-
-            Image(painter = painterResource(R.drawable.google),
-                contentDescription = null,
-                Modifier.size(70.dp))
-        }
     }
 }
 
@@ -160,7 +133,7 @@ private fun Message(
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White,
             fontWeight = FontWeight.Medium
-            )
+        )
         Text(
             text = subtitle,
             modifier = Modifier.fillMaxWidth(),
@@ -212,9 +185,9 @@ private fun InputField(
             Icon(painter = painterResource(leadingIconRes),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
-                )
+            )
         },
-        placeholder = { 
+        placeholder = {
             Text(text = placeholderText)
         }
     )
