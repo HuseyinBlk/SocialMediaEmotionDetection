@@ -1,5 +1,6 @@
 package com.hope.socialmediaemotiondetection.view.registration
 
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -35,8 +38,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
+import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
@@ -44,13 +49,13 @@ import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
+import com.hope.socialmediaemotiondetection.viewmodel.LoginAndRegisterViewModel
 
-@Preview
 @Composable
 fun RegistrationScreen(
     modifier: Modifier= Modifier,
-    navController: NavController
-
+    navController: NavController,
+    viewModel: LoginAndRegisterViewModel = hiltViewModel()
     ){
     Column (
         modifier = Modifier
@@ -68,6 +73,10 @@ fun RegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally
 
     ){
+        var inputTextEmail by remember { mutableStateOf("") }
+        var inputTextPassword by remember { mutableStateOf("") }
+        val registerResult by viewModel.registerResult.collectAsState()
+        val context = LocalContext.current
         Image(painter = painterResource(R.drawable.registerscreenphoto),
             contentDescription =null,
             modifier = Modifier
@@ -84,7 +93,9 @@ fun RegistrationScreen(
         InputField(
             leadingIconRes = R.drawable.baseline_alternate_email_24,
             placeholderText = "email",
-            modifier = Modifier.padding(horizontal = 30.dp)
+            modifier = Modifier.padding(horizontal = 30.dp),
+            onInputValueChange = { inputTextEmail = it },
+            inputValue = inputTextEmail
         )
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -92,14 +103,37 @@ fun RegistrationScreen(
             leadingIconRes = R.drawable.ic_key,
             placeholderText = "password",
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.padding(horizontal = 30.dp)
-
+            modifier = Modifier.padding(horizontal = 30.dp),
+            onInputValueChange = { inputTextPassword = it },
+            inputValue = inputTextPassword
         )
         Spacer(modifier.height(30.dp))
         ActionButton(
             text = "Register",
             isNavigationArrowVisible = false,
-            onClicked = { navController.navigate("registerScreen") },
+            onClicked = {
+                viewModel.register(email = inputTextEmail, password = inputTextPassword)
+                when(registerResult){
+                    is Resource.Idle ->{
+                        //Başlangıç durumu
+                    }
+                    is Resource.Loading -> {
+                        //Yükleniyor durumu
+                    }
+                    is Resource.Success -> {
+                        navController.navigate("mainScreen")
+                    }
+
+                    is Resource.Failure -> {
+                        //Launchefect ile yapmıyı düşün dostum
+                        Toast.makeText(
+                            context,
+                            "Error: ${(registerResult as Resource.Failure).message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = renk2,
                 contentColor = Color.White
@@ -139,23 +173,22 @@ private fun Message(
         )
     }
 }
-
 @Composable
 private fun InputField(
     modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     @DrawableRes leadingIconRes: Int,
-    placeholderText: String
-){
-    var inputValue by remember { mutableStateOf("") }
-
+    placeholderText: String,
+    inputValue: String,
+    onInputValueChange: (String) -> Unit
+) {
     TextField(
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp)
             .padding(start = 15.dp, end = 15.dp),
         value = inputValue,
-        onValueChange ={inputValue = it},
+        onValueChange = onInputValueChange,
         visualTransformation = visualTransformation,
         singleLine = true,
         shape = RoundedCornerShape(10),

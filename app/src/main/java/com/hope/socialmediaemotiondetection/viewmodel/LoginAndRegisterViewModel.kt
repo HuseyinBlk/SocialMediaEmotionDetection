@@ -16,10 +16,10 @@ class LoginAndRegisterViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _registerResult = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
+    private val _registerResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
     val registerResult: StateFlow<Resource<Boolean>> get() = _registerResult
 
-    private val _loginResult = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
+    private val _loginResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
     val loginResult: StateFlow<Resource<Boolean>> get() = _loginResult
     /*
     StateFlow sadece okuma yapabilirsin dikkat et

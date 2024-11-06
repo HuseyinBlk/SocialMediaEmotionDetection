@@ -13,6 +13,9 @@ import com.hope.socialmediaemotiondetection.view.Info.InfoScreen
 import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
 import com.hope.socialmediaemotiondetection.view.registration.RegistrationScreen
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
