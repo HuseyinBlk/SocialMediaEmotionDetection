@@ -4,14 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
-import com.hope.socialmediaemotiondetection.view.Info.InfoScreen
-import com.hope.socialmediaemotiondetection.view.Main.MainScreen
-import com.hope.socialmediaemotiondetection.view.registration.RegistrationScreen
+import com.hope.socialmediaemotiondetection.view.Home.MainScreen
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
