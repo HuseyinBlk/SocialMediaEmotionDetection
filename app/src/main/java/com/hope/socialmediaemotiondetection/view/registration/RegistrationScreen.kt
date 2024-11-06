@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
@@ -48,6 +49,7 @@ import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
 @Composable
 fun RegistrationScreen(
     modifier: Modifier= Modifier,
+    navController: NavController
 
     ){
     Column (
@@ -97,7 +99,7 @@ fun RegistrationScreen(
         ActionButton(
             text = "Register",
             isNavigationArrowVisible = false,
-            onClicked = { /*TODO*/ },
+            onClicked = { navController.navigate("registerScreen") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = renk2,
                 contentColor = Color.White

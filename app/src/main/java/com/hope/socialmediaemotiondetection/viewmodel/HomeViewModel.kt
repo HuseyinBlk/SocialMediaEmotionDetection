@@ -1,11 +1,9 @@
 package com.hope.socialmediaemotiondetection.viewmodel
 
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hope.socialmediaemotiondetection.model.post.Post
 import com.hope.socialmediaemotiondetection.model.result.Resource
-import com.hope.socialmediaemotiondetection.model.user.follows.UserFollowing
 import com.hope.socialmediaemotiondetection.repository.AuthRepository
 import com.hope.socialmediaemotiondetection.repository.PostRepository
 import com.hope.socialmediaemotiondetection.repository.UserFollowsRepository
@@ -20,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val postRepository: PostRepository,
     private val authRepository: AuthRepository,

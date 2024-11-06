@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
@@ -52,10 +53,10 @@ import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
 
-@Preview
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ){
     Column (
         modifier = Modifier
@@ -104,7 +105,7 @@ fun LoginScreen(
         ActionButton(
             text = "Login",
             isNavigationArrowVisible = false,
-            onClicked = { /*TODO*/ },
+            onClicked = { navController.navigate("mainScreen") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = renk2,
                 contentColor = Color.White
