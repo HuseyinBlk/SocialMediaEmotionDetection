@@ -62,13 +62,19 @@ class PostLikesRepository @Inject constructor(
         }
     }
 
+
+
     suspend fun isPostLikedByUser(postId: String): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
-        val likeId = currentUser.uid
+        val userId = currentUser.uid
 
         return try {
-            val snapshot = firestore.collection("posts").document(postId)
-                .collection("likes").document(likeId).get().await()
+            val snapshot = firestore.collection("posts")
+                .document(postId)
+                .collection("likes")
+                .document(userId)  //
+                .get()
+                .await()
 
             Result.success(snapshot.exists())
         } catch (e: Exception) {

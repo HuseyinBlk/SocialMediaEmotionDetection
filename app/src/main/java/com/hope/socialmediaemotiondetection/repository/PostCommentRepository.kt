@@ -12,11 +12,12 @@ class PostCommentRepository @Inject constructor(
     private val auth : FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) {
-    suspend fun addCommentToPost(postId: String, content: String, emotion: String): Result<Boolean> {
+    suspend fun addCommentToPost(postId: String, content: String, emotion: String): Result<String> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
 
         return try {
             val commentId = firestore.collection("posts").document(postId).collection("comments").document().id
+
             val comment = Comment(commentId, currentUser.uid, content, FieldValue.serverTimestamp(), emotion)
 
             val commentRef = firestore.collection("posts")
@@ -28,29 +29,12 @@ class PostCommentRepository @Inject constructor(
 
             firestore.collection("posts").document(postId)
                 .update("commentsCount", FieldValue.increment(1)).await()
-
-            Result.success(true)
+            Result.success(commentId)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun removeCommentFromPost(postId: String, commentId: String): Result<Boolean> {
-        return try {
-            firestore.collection("posts")
-                .document(postId)
-                .collection("comments")
-                .document(commentId)
-                .delete().await()
-
-            firestore.collection("posts").document(postId)
-                .update("commentsCount", FieldValue.increment(-1)).await()
-
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
     /*EMOTİON GÜNCELLEME EKSİK MODEL GELSİN ONA GÖRE EKLİCEM*/
     suspend fun updateComment(postId: String, commentId: String, newContent: String): Result<Boolean> {
         return try {
@@ -86,4 +70,47 @@ class PostCommentRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun getCommentsCount(postId: String): Result<Int> {
+        return try {
+            val snapshot = firestore.collection("posts").document(postId).get().await()
+            val commentsCount = snapshot.getLong("commentsCount")?.toInt() ?: 0
+            Result.success(commentsCount)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun removeCommentFromPost(postId: String, commentId: String): Result<Boolean> {
+        val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+
+        return try {
+            firestore.runTransaction { transaction ->
+                val commentRef = firestore.collection("posts")
+                    .document(postId)
+                    .collection("comments")
+                    .document(commentId)
+
+                transaction.delete(commentRef)
+
+                val postRef = firestore.collection("posts").document(postId)
+                transaction.update(postRef, "commentsCount", FieldValue.increment(-1))
+
+                val userCommentRef = firestore.collection("users").document(currentUser.uid)
+                    .collection("comments").document(commentId)
+
+                transaction.delete(userCommentRef)
+
+                return@runTransaction true
+            }.await()
+
+            Result.success(true)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+
 }
