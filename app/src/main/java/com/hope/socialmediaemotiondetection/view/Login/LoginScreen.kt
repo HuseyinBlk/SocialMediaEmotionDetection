@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
+import com.hope.socialmediaemotiondetection.view.components.Message
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
@@ -83,7 +84,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
         Message(
             title = "Welcome Back !",
-            subtitle = "Please Login."
+            subtitle = "Please Login.",
+            textColor = Color.White,
+            fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(70.dp))
 
@@ -144,34 +147,7 @@ fun LoginScreen(
     }
 }
 
-@Composable
-private fun Message(
-    modifier: Modifier=Modifier,
-    title: String,
-    subtitle : String
-){
-    Column (
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ){
-        Text(
-            text = title,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White,
-            fontWeight = FontWeight.Medium
-            )
-        Text(
-            text = subtitle,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
-            fontWeight = FontWeight.Black
-        )
-    }
-}
+
 
 @Composable
 private fun InputField(
