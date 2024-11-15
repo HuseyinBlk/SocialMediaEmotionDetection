@@ -47,6 +47,7 @@ fun GetUsernameScreen() {
     var expanded by remember { mutableStateOf(false) }
     //seçilen ilgi alanları için liste
     val selectedInterests = remember { mutableStateMapOf<String, Boolean>() }
+    var inputValue by remember { mutableStateOf("") }
     Box(modifier = Modifier
         .background(
             brush = Brush.verticalGradient(
@@ -79,8 +80,8 @@ fun GetUsernameScreen() {
                 fontWeight = FontWeight.Normal
             )
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = inputValue,
+                onValueChange = {inputValue = it},
                 label = { Text("Kullanıcı Adı") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -139,6 +140,7 @@ fun GetUsernameScreen() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 80.dp, vertical = 16.dp) // Butonun hizalaması ve padding
+                .fillMaxWidth()
         )
     }
 }

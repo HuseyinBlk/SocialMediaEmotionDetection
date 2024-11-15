@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.hope.socialmediaemotiondetection.view.components.PostItem
 import com.hope.socialmediaemotiondetection.view.components.samplePosts
+import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +65,10 @@ fun MainScreen() {
             )
         },
         bottomBar = {
-            NavigationBar (){
+            NavigationBar (
+                modifier = Modifier.height(80.dp),
+                containerColor = renk4
+            ){
                 NavigationBarItem(
                     onClick = {
                         // Tıklama olayını buraya ekleyin
@@ -162,22 +165,3 @@ fun MainScreen() {
     }
 }
 
-@Composable
-fun BottomNavigationBar() {
-    BottomAppBar(
-        contentColor = Color.Black,
-        containerColor = Color.White
-
-    ) {
-        Column (
-        ){
-            IconButton(onClick = { /* Home action */ }) {
-                Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
-            }
-            IconButton(onClick = { /* Profile action */ }) {
-                Icon(imageVector = Icons.Default.Person, contentDescription = "Profile")
-            }
-        }
-
-    }
-}

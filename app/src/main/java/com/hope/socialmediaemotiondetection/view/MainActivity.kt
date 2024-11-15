@@ -1,6 +1,7 @@
 package com.hope.socialmediaemotiondetection.view
 
 import GetUsernameScreen
+import SearchScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,48 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val userList = listOf(
+                User(
+                    userId = "1",
+                    username = "Hüseyin Balık",
+                    email = "huseyin@example.com",
+                    profileImage = "https://example.com/profile1.jpg",
+                    bio = "Software Engineer",
+                    interests = listOf("Tech", "AI")
+                ),
+                User(
+                    userId = "2",
+                    username = "Ahmet Yılmaz",
+                    email = "ahmet@example.com",
+                    profileImage = "https://example.com/profile2.jpg",
+                    bio = "Graphic Designer",
+                    interests = listOf("Art", "Photography")
+                ),
+                User(
+                    userId = "3",
+                    username = "Mehmet Öz",
+                    email = "mehmet@example.com",
+                    profileImage = null, // Profil resmi olmayan kullanıcı
+                    bio = "Doctor and Writer",
+                    interests = listOf("Health", "Writing")
+                ),
+                User(
+                    userId = "4",
+                    username = "Selin Kaya",
+                    email = "selin@example.com",
+                    profileImage = "https://example.com/profile4.jpg",
+                    bio = "Music Lover",
+                    interests = listOf("Music", "Travel")
+                ),
+                User(
+                    userId = "5",
+                username = "Hüseyin Balık",
+                email = "huseyin@example.com",
+                profileImage = "https://example.com/profile1.jpg",
+                bio = "Software Engineer",
+                interests = listOf("Tech", "AI")
+                )
+            )
             SocialMediaEmotionDetectionTheme {
                 /*
                 val firebaseAuth = FirebaseAuth.getInstance()
@@ -42,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 */
-                GetUsernameScreen()
+                SearchScreen(userList)
             }
         }
     }
