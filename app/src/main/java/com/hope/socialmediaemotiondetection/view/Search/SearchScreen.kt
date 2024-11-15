@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
 import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 
 @OptIn(ExperimentalMaterial3Api::class)
