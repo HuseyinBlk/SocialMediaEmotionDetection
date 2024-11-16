@@ -1,5 +1,6 @@
 package com.hope.socialmediaemotiondetection.view.Home
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -33,6 +35,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,16 +45,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.view.components.PostItem
 import com.hope.socialmediaemotiondetection.view.components.samplePosts
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
+import com.hope.socialmediaemotiondetection.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
     var inputValue by remember { mutableStateOf("") }
+    val postResult by homeViewModel.postResult.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(postResult) {
+        when (postResult) {
+            is Resource.Success -> {
+                Toast.makeText(context, "Gönderi başarıyla eklendi!", Toast.LENGTH_SHORT).show()
+                homeViewModel.resetPostResult()
+            }
+            is Resource.Failure -> {
+                Toast.makeText(
+                    context,
+                    (postResult as Resource.Failure).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.resetPostResult()
+            }
+            else -> {}
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -147,14 +179,17 @@ fun MainScreen() {
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
-                IconButton(onClick = { /* Gönderi ekleme işlemi */ }) {
+                IconButton(onClick = {
+                    homeViewModel.addPost("mutlu",inputValue)
+                    inputValue = ""
+                }) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send Icon"
                     )
                 }
             }
-            Divider()
+            HorizontalDivider()
             // Gönderi liste
             LazyColumn {
                 items(samplePosts) { post ->

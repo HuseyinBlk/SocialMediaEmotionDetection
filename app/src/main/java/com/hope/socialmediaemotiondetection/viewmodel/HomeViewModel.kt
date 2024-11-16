@@ -72,6 +72,9 @@ class HomeViewModel @Inject constructor(
     val commentCountResult: StateFlow<Resource<Int>> get() = _commentCountResult
 
 
+    fun resetPostResult() {
+        _postResult.value = Resource.Idle()
+    }
 
     fun addPost(emotion : String,content : String){
         viewModelScope.launch(Dispatchers.IO) {
