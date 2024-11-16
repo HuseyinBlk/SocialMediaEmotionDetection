@@ -2,6 +2,9 @@ package com.hope.socialmediaemotiondetection.view.registration
 
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.EaseOutCirc
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +61,11 @@ fun RegistrationScreen(
     navController: NavController,
     viewModel: LoginAndRegisterViewModel = hiltViewModel()
     ){
+    var animation by remember { mutableStateOf(true) }
+    val scaleAnim by animateFloatAsState(
+        targetValue = if (animation) 0.3f else 1f,
+        animationSpec = tween(durationMillis = 500, easing = EaseOutCirc), label = "LoginAnimate"
+    )
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +78,7 @@ fun RegistrationScreen(
                     0.8f to renk4,
 
                     )
-            ),
+            ).graphicsLayer(scaleAnim),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ){
@@ -76,6 +86,40 @@ fun RegistrationScreen(
         var inputTextPassword by remember { mutableStateOf("") }
         val registerResult by viewModel.registerResult.collectAsState()
         val context = LocalContext.current
+        var isLoggingIn by remember { mutableStateOf(true) }
+
+        LaunchedEffect(registerResult) {
+            when (registerResult) {
+                is Resource.Idle -> {
+                    animation = false
+                    isLoggingIn = false
+                }
+                is Resource.Loading -> {
+                    if (isLoggingIn) {
+                        Toast.makeText(context, "Yükleniyor...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Success -> {
+                    if (isLoggingIn) {
+                        navController.navigate("mainScreen"){
+                            popUpTo("registerScreen") { inclusive = true }
+                        }
+                        isLoggingIn = false
+                    }
+                }
+                is Resource.Failure -> {
+                    if (isLoggingIn) {
+                        Toast.makeText(
+                            context,
+                            "Error: ${(registerResult as Resource.Failure).message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        isLoggingIn = false
+                    }
+                }
+            }
+        }
+
         Image(painter = painterResource(R.drawable.registerscreenphoto),
             contentDescription =null,
             modifier = Modifier
@@ -111,27 +155,8 @@ fun RegistrationScreen(
             text = "Register",
             isNavigationArrowVisible = false,
             onClicked = {
-                viewModel.register(email = inputTextEmail, password = inputTextPassword)
-                when(registerResult){
-                    is Resource.Idle ->{
-                        //Başlangıç durumu
-                    }
-                    is Resource.Loading -> {
-                        //Yükleniyor durumu
-                    }
-                    is Resource.Success -> {
-                        navController.navigate("mainScreen")
-                    }
-
-                    is Resource.Failure -> {
-                        //Launcheffect ile yapmıyı düşün dostum
-                        Toast.makeText(
-                            context,
-                            "Error: ${(registerResult as Resource.Failure).message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
+                isLoggingIn = true
+                viewModel.register(inputTextEmail, inputTextPassword)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = renk2,

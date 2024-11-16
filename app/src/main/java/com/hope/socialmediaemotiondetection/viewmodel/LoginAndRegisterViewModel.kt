@@ -43,14 +43,14 @@ class LoginAndRegisterViewModel @Inject constructor(
     }
 
     fun login(email: String, password: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             _loginResult.value = Resource.Loading()
             try {
                 val result = authRepository.loginUser(email, password)
                 _loginResult.value = if (result.isSuccess) {
                     Resource.Success(true)
                 } else {
-                    Resource.Failure("Giriş başarısız.")
+                    Resource.Failure("Giriş başarısız: ${result.exceptionOrNull()?.message}")
                 }
             } catch (e: Exception) {
                 _loginResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")

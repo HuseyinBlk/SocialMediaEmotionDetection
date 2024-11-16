@@ -2,6 +2,12 @@ package com.hope.socialmediaemotiondetection.view.Login
 
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCirc
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +30,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -67,6 +75,12 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginAndRegisterViewModel = hiltViewModel()
 ){
+    var animation by remember { mutableStateOf(true) }
+    val scaleAnim by animateFloatAsState(
+        targetValue = if (animation) 0.3f else 1f,
+        animationSpec = tween(durationMillis = 500, easing = EaseOutCirc), label = "LoginAnimate"
+    )
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -77,9 +91,8 @@ fun LoginScreen(
                     0.20f to renk2,
                     0.4f to renk3,
                     0.8f to renk4,
-
                     )
-            ),
+            ).graphicsLayer(scaleAnim),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ){
@@ -87,6 +100,41 @@ fun LoginScreen(
         var inputTextPassword by remember { mutableStateOf("") }
         val loginResult by viewModel.loginResult.collectAsState()
         val context = LocalContext.current
+        var isLoggingIn by remember { mutableStateOf(true) }
+
+
+
+        LaunchedEffect(loginResult) {
+            when (loginResult) {
+                is Resource.Idle -> {
+                    animation = false
+                    isLoggingIn = false
+                }
+                is Resource.Loading -> {
+                    if (isLoggingIn) {
+                        Toast.makeText(context, "Yükleniyor...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Success -> {
+                    if (isLoggingIn) {
+                        navController.navigate("mainScreen"){
+                            popUpTo("loginScreen") { inclusive = true }
+                        }
+                        isLoggingIn = false
+                    }
+                }
+                is Resource.Failure -> {
+                    if (isLoggingIn) {
+                        Toast.makeText(
+                            context,
+                            "Error: ${(loginResult as Resource.Failure).message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        isLoggingIn = false
+                    }
+                }
+            }
+        }
         Image(painter = painterResource(R.drawable.avatar),
             contentDescription =null,
             modifier = Modifier
@@ -124,27 +172,8 @@ fun LoginScreen(
             text = "Login",
             isNavigationArrowVisible = false,
             onClicked = {
-                viewModel.login(inputTextEmail,inputTextPassword)
-                when(loginResult){
-                    is Resource.Idle ->{
-
-                    }
-                    is Resource.Loading ->{
-
-                    }
-                    is Resource.Success -> {
-                        navController.navigate("mainScreen")
-                    }
-
-                    is Resource.Failure -> {
-                        //Launcheffect
-                        Toast.makeText(
-                            context,
-                            "Error: ${(loginResult as Resource.Failure).message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
+                isLoggingIn = true
+                viewModel.login(inputTextEmail, inputTextPassword)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = renk2,
@@ -154,6 +183,8 @@ fun LoginScreen(
             modifier = Modifier.padding(horizontal = 50.dp)
         )
         Spacer(modifier = Modifier.height(15.dp))
+
+
         ClickableText(
             text = AnnotatedString("Hesabın yoksa tıklayarak Kayıt Ol!"),
             onClick = { offset ->

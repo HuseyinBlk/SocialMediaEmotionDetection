@@ -18,11 +18,16 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun loginUser(email: String,password: String):Result<Boolean>{
+    suspend fun loginUser(email: String, password: String): Result<Boolean> {
         return try {
-            auth.signInWithEmailAndPassword(email,password)
-            Result.success(true)
-        }catch(e:Exception){
+            auth.signInWithEmailAndPassword(email, password).await()
+            val user = auth.currentUser
+            if (user != null) {
+                Result.success(true)
+            } else {
+                Result.failure(Exception("Kullanıcı bulunamadı"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
