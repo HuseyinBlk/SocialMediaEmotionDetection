@@ -124,7 +124,7 @@ fun RegistrationScreen(
                     }
 
                     is Resource.Failure -> {
-                        //Launchefect ile yapmıyı düşün dostum
+                        //Launcheffect ile yapmıyı düşün dostum
                         Toast.makeText(
                             context,
                             "Error: ${(registerResult as Resource.Failure).message}",

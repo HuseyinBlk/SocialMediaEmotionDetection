@@ -174,6 +174,21 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getUserByIdFromFirestore(userId: String): Result<User?> {
+        return try {
+            // Directly fetch the document using the provided userId
+            val userDocument = firestore.collection("users").document(userId).get().await()
+
+            if (userDocument.exists()) {
+                Result.success(userDocument.toObject(User::class.java))
+            } else {
+                Result.failure(Exception("User not found"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getUsernameByUserId(userId: String): Result<String?> {
         return try {
             val userDocument = firestore.collection("users").document(userId).get().await()

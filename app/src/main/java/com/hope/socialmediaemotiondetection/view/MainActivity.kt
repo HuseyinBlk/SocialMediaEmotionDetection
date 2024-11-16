@@ -67,10 +67,9 @@ class MainActivity : ComponentActivity() {
                 )
             )
             SocialMediaEmotionDetectionTheme {
-                /*
                 val firebaseAuth = FirebaseAuth.getInstance()
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = if (firebaseAuth.currentUser != null) "mainScreen" else "infoScreen" ) {
+                NavHost(navController, startDestination =  "infoScreen" ) {
                     composable("mainScreen"){
                         MainScreen()
                     }
@@ -84,8 +83,6 @@ class MainActivity : ComponentActivity() {
                         RegistrationScreen(navController = navController)
                     }
                 }
-                */
-                SearchScreen(userList)
             }
         }
     }
