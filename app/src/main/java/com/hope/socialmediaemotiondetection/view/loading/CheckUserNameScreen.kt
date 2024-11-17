@@ -1,17 +1,23 @@
 package com.hope.socialmediaemotiondetection.view.loading
 
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.EaseInElastic
+import androidx.compose.animation.core.EaseInOutQuad
 import androidx.compose.animation.core.EaseInOutQuart
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,6 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -63,25 +72,61 @@ fun CheckUserNameScreen(navController : NavController) {
 
     if (isLoading.value) {
         val infiniteTransition = rememberInfiniteTransition(label = "Loading Remember")
+
         val rotation by infiniteTransition.animateFloat(
             initialValue = 0f,
             targetValue = 360f,
             animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1000, easing = EaseOutExpo)
+                animation = tween(durationMillis = 1000, easing = EaseInOutQuad),
+                repeatMode = RepeatMode.Restart
             ), label = "Loading Animation"
         )
 
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 0.4f,
+            targetValue = 1.2f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1000, easing = EaseInOutQuad),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "Scale Animation"
+        )
+
+        val opacity by infiniteTransition.animateFloat(
+            initialValue = 0.4f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1000, easing = EaseInOutQuad),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "Opacity Animation"
+        )
+
+        val color by infiniteTransition.animateColor(
+            initialValue = MaterialTheme.colorScheme.primary,
+            targetValue = MaterialTheme.colorScheme.secondary,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1000, easing = EaseInOutQuad),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "Color Animation"
+        )
+
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp)
+                .graphicsLayer(alpha = opacity),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Loading",
                 modifier = Modifier
-                    .size(64.dp)
-                    .rotate(rotation), // Rotasyon animasyonu
-                tint = MaterialTheme.colorScheme.primary
+                    .size(128.dp)
+                    .rotate(rotation)
+                    .scale(scale),
+                tint = color
             )
         }
     }

@@ -1,8 +1,11 @@
 package com.hope.socialmediaemotiondetection.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.WriteBatch
+import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.model.user.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -176,7 +179,6 @@ class UserRepository @Inject constructor(
 
     suspend fun getUserByIdFromFirestore(userId: String): Result<User?> {
         return try {
-            // Directly fetch the document using the provided userId
             val userDocument = firestore.collection("users").document(userId).get().await()
 
             if (userDocument.exists()) {
@@ -207,4 +209,48 @@ class UserRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun getUserNamesSimilarTo(username: String): Resource<List<User>> {
+        return try {
+            val usernamesRef = firestore.collection("usernames")
+            val querySnapshot = usernamesRef
+                .orderBy(FieldPath.documentId())
+                .startAt(username)
+                .endAt(username + "\uf8ff")
+                .get()
+                .await()
+
+            Log.d("FirestoreDebug", "Query found ${querySnapshot.size()} documents.")
+
+            if (querySnapshot.isEmpty) {
+                return Resource.Failure("Benzer kullanıcılar bulunamadı")
+            }
+
+            val users = mutableListOf<User>()
+
+            for (document in querySnapshot.documents) {
+                val userId = document.getString("userId")
+                if (userId != null) {
+                    val userDocument = firestore.collection("users").document(userId).get().await()
+                    if (userDocument.exists()) {
+                        val user = userDocument.toObject(User::class.java)
+                        if (user != null) {
+                            users.add(user)
+                        }
+                    }
+                }
+            }
+            if (users.isNotEmpty()) {
+                Resource.Success(users)
+            } else {
+                Resource.Failure("Benzer kullanıcılar bulunamadı")
+            }
+
+        } catch (e: Exception) {
+            Log.e("FirestoreError", "Error fetching document: ${e.message}")
+            Resource.Failure("Bir hata oluştu: ${e.message}")
+        }
+    }
+
+
 }
