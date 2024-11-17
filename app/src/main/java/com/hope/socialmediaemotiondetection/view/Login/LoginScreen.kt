@@ -117,7 +117,7 @@ fun LoginScreen(
                 }
                 is Resource.Success -> {
                     if (isLoggingIn) {
-                        navController.navigate("mainScreen"){
+                        navController.navigate("checkUserNameScreen"){
                             popUpTo("loginScreen") { inclusive = true }
                         }
                         isLoggingIn = false
@@ -188,7 +188,9 @@ fun LoginScreen(
         ClickableText(
             text = AnnotatedString("Hesabın yoksa tıklayarak Kayıt Ol!"),
             onClick = { offset ->
-                navController.navigate("registerScreen")
+                navController.navigate("registerScreen"){
+                    popUpTo("loginScreen") { inclusive = true }
+                }
             },
             style = TextStyle(
                 color = Color.White,

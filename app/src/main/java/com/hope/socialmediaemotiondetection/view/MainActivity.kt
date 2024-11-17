@@ -6,9 +6,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -78,32 +83,61 @@ class MainActivity : ComponentActivity() {
                 val firebaseAuth = FirebaseAuth.getInstance()
                 val firestore = FirebaseFirestore.getInstance()
                 val navController = rememberNavController()
-                val checkUserName =  CheckUserName(userNameCheck = UserNameCheckRepository(firestore))
-                NavHost(navController, startDestination = if (firebaseAuth.currentUser != null) "mainScreen" else "infoScreen") {
-                    composable("mainScreen"){
-                        val isUserNameAvailable = remember { mutableStateOf(false) }
 
-                        LaunchedEffect(firebaseAuth.currentUser?.uid) {
+
+                NavHost(navController = navController, startDestination = if (firebaseAuth.currentUser != null) "checkUserNameScreen" else "infoScreen") {
+                    composable("checkUserNameScreen") {
+                        val isLoading = remember { mutableStateOf(true) }
+                        LaunchedEffect(Unit) {
+                            val checkUserName = CheckUserName(userNameCheck = UserNameCheckRepository(firestore))
                             val isAvailable = checkUserName.isUserNameAvailable(firebaseAuth.currentUser!!.uid)
-                            isUserNameAvailable.value = isAvailable
+                            isLoading.value = false
+                            if (isAvailable) {
+                                navController.navigate("mainScreen") {
+                                    popUpTo("checkUserNameScreen") { inclusive = true }
+                                }
+                            } else {
+                                navController.navigate("userDetailsScreen") {
+                                    popUpTo("checkUserNameScreen") { inclusive = true }
+                                }
+                            }
                         }
-                        if (isUserNameAvailable.value) {
-                            MainScreen(navController = navController)
-                        } else {
-                            navController.navigate("userDetailsScreen")
+
+                        // Eğer yükleme durumu varsa, CircularProgressIndicator gösteriyoruz
+                        if (isLoading.value) {
+                            // Yükleme göstergesi (CircularProgressIndicator)
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
-                    composable("infoScreen"){
+
+                    // InfoScreen
+                    composable("infoScreen") {
                         InfoScreen(navController = navController)
                     }
-                    composable("logInScreen"){
+
+                    // LogInScreen
+                    composable("logInScreen") {
                         LoginScreen(navController = navController)
                     }
-                    composable("registerScreen"){
+
+                    // RegisterScreen
+                    composable("registerScreen") {
                         RegistrationScreen(navController = navController)
                     }
-                    composable("userDetailsScreen"){
-                        GetUsernameScreen()
+
+                    // UserDetailsScreen
+                    composable("userDetailsScreen") {
+                        GetUsernameScreen(navController = navController)
+                    }
+
+                    // MainScreen (Bu ekran yalnızca kullanıcı adı kontrolü sonrası gösterilecek)
+                    composable("mainScreen") {
+                        MainScreen(navController = navController)
                     }
                 }
             }

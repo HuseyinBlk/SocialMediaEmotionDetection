@@ -101,7 +101,7 @@ fun RegistrationScreen(
                 }
                 is Resource.Success -> {
                     if (isLoggingIn) {
-                        navController.navigate("mainScreen"){
+                        navController.navigate("checkUserNameScreen"){
                             popUpTo("registerScreen") { inclusive = true }
                         }
                         isLoggingIn = false

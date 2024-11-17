@@ -17,10 +17,10 @@ class UserDetailsViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _updateUserResult = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
+    private val _updateUserResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
     val updateUserResult: StateFlow<Resource<Boolean>> get() = _updateUserResult
 
-    private val _registerUserResult = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
+    private val _registerUserResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
     val registerUserResult : StateFlow<Resource<Boolean>> get() = _registerUserResult
 
     fun updateUser(username: String? = null, bio: String? = null, interests: List<String?>? = null) {
