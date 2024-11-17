@@ -26,6 +26,7 @@ import com.hope.socialmediaemotiondetection.utils.CheckUserName
 import com.hope.socialmediaemotiondetection.view.Home.MainScreen
 import com.hope.socialmediaemotiondetection.view.Info.InfoScreen
 import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
+import com.hope.socialmediaemotiondetection.view.loading.CheckUserNameScreen
 import com.hope.socialmediaemotiondetection.view.registration.RegistrationScreen
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 
@@ -80,39 +81,13 @@ class MainActivity : ComponentActivity() {
                 )
             )
             SocialMediaEmotionDetectionTheme {
-                val firebaseAuth = FirebaseAuth.getInstance()
-                val firestore = FirebaseFirestore.getInstance()
+
                 val navController = rememberNavController()
 
 
-                NavHost(navController = navController, startDestination = if (firebaseAuth.currentUser != null) "checkUserNameScreen" else "infoScreen") {
+                NavHost(navController = navController, startDestination = "checkUserNameScreen" ) {
                     composable("checkUserNameScreen") {
-                        val isLoading = remember { mutableStateOf(true) }
-                        LaunchedEffect(Unit) {
-                            val checkUserName = CheckUserName(userNameCheck = UserNameCheckRepository(firestore))
-                            val isAvailable = checkUserName.isUserNameAvailable(firebaseAuth.currentUser!!.uid)
-                            isLoading.value = false
-                            if (isAvailable) {
-                                navController.navigate("mainScreen") {
-                                    popUpTo("checkUserNameScreen") { inclusive = true }
-                                }
-                            } else {
-                                navController.navigate("userDetailsScreen") {
-                                    popUpTo("checkUserNameScreen") { inclusive = true }
-                                }
-                            }
-                        }
-
-                        // Eğer yükleme durumu varsa, CircularProgressIndicator gösteriyoruz
-                        if (isLoading.value) {
-                            // Yükleme göstergesi (CircularProgressIndicator)
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
+                        CheckUserNameScreen(navController)
                     }
 
                     // InfoScreen
