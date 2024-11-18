@@ -5,6 +5,9 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hope.socialmediaemotiondetection.model.user.dailyEmotion.DailyEmotion
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class UserDailyEmotionRepository @Inject constructor(
@@ -15,8 +18,8 @@ class UserDailyEmotionRepository @Inject constructor(
     private suspend fun createDailyEmotion(date: String): DailyEmotion {
         val newEmotionData = DailyEmotion(
             date = date,
-            emotions = mapOf("happy" to 0, "sadness" to 0 /*DEVAMINI UNUTMA*/),
-            createdAt = FieldValue.serverTimestamp().toString()
+            emotions = mapOf("sad" to 0, "happy" to 0 ,"love" to 0,"angry" to 0,"fear" to 0,"surprise" to 0),
+            createdAt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         )
 
         val currentUser = auth.currentUser ?: throw Exception("User not logged in")
@@ -31,14 +34,35 @@ class UserDailyEmotionRepository @Inject constructor(
 
     suspend fun updateDailyEmotion(date: String, emotionType: String, increment: Int): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
-
         val dailyEmotionRef = firestore.collection("users")
             .document(currentUser.uid)
             .collection("dailyEmotions")
             .document(date)
 
         return try {
-            dailyEmotionRef.update("emotions.$emotionType", FieldValue.increment(increment.toLong())).await()
+            val documentSnapshot = dailyEmotionRef.get().await()
+
+            if (!documentSnapshot.exists()) {
+                val newEmotionData = DailyEmotion(
+                    date = date,
+                    emotions = mapOf(
+                        "sad" to 0,
+                        "happy" to 0,
+                        "love" to 0,
+                        "angry" to 0,
+                        "fear" to 0,
+                        "surprise" to 0
+                    ),
+                    createdAt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                )
+                dailyEmotionRef.set(newEmotionData).await()
+            }
+
+            val currentEmotionValue = documentSnapshot.get("emotions.$emotionType") as? Long ?: 0L
+            val newEmotionValue = currentEmotionValue + increment
+
+            dailyEmotionRef.update("emotions.$emotionType", newEmotionValue).await()
+
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)

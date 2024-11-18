@@ -167,7 +167,7 @@ fun MainScreen(
                     )
                 )
                 IconButton(onClick = {
-                    homeViewModel.addPost("mutlu", inputValue)
+                    homeViewModel.addPost("happy", inputValue)
                     inputValue = ""
                 }) {
                     Icon(imageVector = Icons.Default.Send, contentDescription = "Send Icon")
@@ -193,8 +193,8 @@ fun MainScreen(
                                     username = username,
                                     post = post,
                                     isLiked = isLiked,
-                                    onLikeClicked = { postId -> homeViewModel.addLikedPost(postId) },
-                                    onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId) }
+                                    onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
+                                    onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
                                 )
                             }
                         }

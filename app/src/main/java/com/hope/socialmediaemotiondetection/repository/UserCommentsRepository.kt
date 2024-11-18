@@ -15,8 +15,7 @@ class UserCommentsRepository @Inject constructor(
     suspend fun addCommentToUser(postId: String, content: String, emotion: String) : Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
         val commentId = firestore.collection("users").document(currentUser.uid)
-            .collection("comments").document().id // Yeni bir belge oluşturmak için ID al
-
+            .collection("comments").document().id
         val comment = Comment(
             postId,
             content,
@@ -27,6 +26,20 @@ class UserCommentsRepository @Inject constructor(
         return try {
             firestore.collection("users").document(currentUser.uid)
                 .collection("comments").document(commentId).set(comment).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun removeCommentFromUser(postId: String, commentId: String): Result<Boolean> {
+        val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+
+        return try {
+            // Kullanıcının comments koleksiyonundaki ilgili yorumu sil
+            firestore.collection("users").document(currentUser.uid)
+                .collection("comments").document(commentId).delete().await()
+
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
