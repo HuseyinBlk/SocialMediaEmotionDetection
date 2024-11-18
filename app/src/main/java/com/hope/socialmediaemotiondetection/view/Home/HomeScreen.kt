@@ -2,7 +2,6 @@ package com.hope.socialmediaemotiondetection.view.Home
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,9 +21,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -53,15 +50,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.hope.socialmediaemotiondetection.model.post.Post
 import com.hope.socialmediaemotiondetection.model.result.Resource
-import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.view.components.PostItem
-import com.hope.socialmediaemotiondetection.view.components.samplePosts
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.viewmodel.HomeViewModel
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -70,7 +64,14 @@ fun MainScreen(
 ) {
     var inputValue by remember { mutableStateOf("") }
     val postResult by homeViewModel.postResult.collectAsState()
+    val getAllPost by homeViewModel.getAllPost.collectAsState()
+    val postLikeResults by homeViewModel.postLikeResults.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        homeViewModel.getFollowingAllPost()
+    }
+
     LaunchedEffect(postResult) {
         when (postResult) {
             is Resource.Success -> {
@@ -88,63 +89,44 @@ fun MainScreen(
             else -> {}
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = @Composable{ Text("Home", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 actions = {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Theme Toggle Icon"
-                        )
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Theme Toggle Icon"
+                    )
                 }
             )
         },
         bottomBar = {
-            NavigationBar (
+            NavigationBar(
                 modifier = Modifier.height(80.dp),
                 containerColor = renk4
             ){
                 NavigationBarItem(
-                    onClick = {
-                        // Tıklama olayını buraya ekleyin
-                    },
+                    onClick = { /* Tıklama olayını buraya ekleyin */ },
                     selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Home Icon"
-                        )
-                    }
+                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home Icon") }
                 )
                 NavigationBarItem(
-                    onClick = {
-                        navController.navigate("searchScreen")
-                    },
+                    onClick = { navController.navigate("searchScreen") },
                     selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon"
-                        )
-                    }
+                    icon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon") }
                 )
                 NavigationBarItem(
-                    onClick = {
-                        // Tıklama olayını buraya ekleyin
-                    },
+                    onClick = { /* Tıklama olayını buraya ekleyin */ },
                     selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Profile Icon"
-                        )
-                    }
+                    icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon") }
                 )
             }
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -170,7 +152,7 @@ fun MainScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 TextField(
                     value = inputValue,
-                    onValueChange = {inputValue = it},
+                    onValueChange = { inputValue = it },
                     placeholder = { Text("Bugün Nasılsın?") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,20 +167,76 @@ fun MainScreen(
                     )
                 )
                 IconButton(onClick = {
-                    homeViewModel.addPost("mutlu",inputValue)
+                    homeViewModel.addPost("mutlu", inputValue)
                     inputValue = ""
                 }) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Send Icon"
-                    )
+                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send Icon")
                 }
             }
+
             HorizontalDivider()
-            // Gönderi liste
+
             LazyColumn {
-                items(samplePosts) { post ->
-                    PostItem(post)
+                when (getAllPost) {
+                    is Resource.Success -> {
+                        val postsMap = (getAllPost as Resource.Success<Map<String, List<Post>>>).data
+                        postsMap.forEach { (username, posts) ->
+                            items(posts) { post ->
+                                homeViewModel.checkPostLikeStatus(post.postId)
+                                val isLiked = when (val result = postLikeResults[post.postId]) {
+                                    is Resource.Success -> result.data
+                                    is Resource.Failure -> false
+                                    else -> false
+                                }
+
+                                PostItem(
+                                    username = username,
+                                    post = post,
+                                    isLiked = isLiked,
+                                    onLikeClicked = { postId -> homeViewModel.addLikedPost(postId) },
+                                    onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId) }
+                                )
+                            }
+                        }
+                    }
+                    is Resource.Failure -> {
+                        item {
+                            Text(
+                                text = (getAllPost as Resource.Failure).message,
+                                color = Color.Red,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    is Resource.Loading -> {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(48.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    strokeWidth = 4.dp
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Gönderiler yükleniyor...",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        item {
+                            Text(
+                                text = "Henüz gönderi yok.",
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

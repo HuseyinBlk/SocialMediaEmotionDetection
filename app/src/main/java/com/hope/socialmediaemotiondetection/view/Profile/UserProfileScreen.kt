@@ -26,11 +26,6 @@ import com.hope.socialmediaemotiondetection.view.components.PostItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileScreen(user: User) {
-    val staticPosts = listOf(
-        Post("post1", "Ben post atıyorum", "morning", "user1", "joy", 36, 34),
-        Post("post2", "Merhaba dünya!", "afternoon", "user1", "happy", 25, 18),
-        Post("post3", "Bugün harika bir gün!", "evening", "user1", "excited", 15, 22)
-    )
     Scaffold(
         topBar = {
             TopAppBar(
@@ -70,9 +65,7 @@ fun UserProfileScreen(user: User) {
 
                 // Kullanıcının paylaşımlarını listele
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(staticPosts) { post ->
-                        PostItem(post = post)
-                    }
+
                 }
             }
         }

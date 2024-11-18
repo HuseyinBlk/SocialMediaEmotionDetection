@@ -72,7 +72,7 @@ class PostLikesRepository @Inject constructor(
             val snapshot = firestore.collection("posts")
                 .document(postId)
                 .collection("likes")
-                .document(userId)  //
+                .document(userId)
                 .get()
                 .await()
 

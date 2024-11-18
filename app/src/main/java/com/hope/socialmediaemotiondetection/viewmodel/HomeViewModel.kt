@@ -45,8 +45,8 @@ class HomeViewModel @Inject constructor(
 
 
 
-    private val _postLikeResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
-    val postLikeResult : StateFlow<Resource<Boolean>> get() = _postLikeResult
+    private val _postLikeResults = MutableStateFlow<Map<String, Resource<Boolean>>>(emptyMap())
+    val postLikeResults: StateFlow<Map<String, Resource<Boolean>>> get() = _postLikeResults
 
     private val _postAddLikeResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
     val postAddLikeResult : StateFlow<Resource<Boolean>> get() = _postAddLikeResult
@@ -56,6 +56,8 @@ class HomeViewModel @Inject constructor(
 
     private val _likesCountResult = MutableStateFlow<Resource<Int>>(Resource.Idle())
     val likesCountResult: StateFlow<Resource<Int>> get() = _likesCountResult
+
+
 
 
 
@@ -71,11 +73,13 @@ class HomeViewModel @Inject constructor(
     private val _commentCountResult = MutableStateFlow<Resource<Int>>(Resource.Idle())
     val commentCountResult: StateFlow<Resource<Int>> get() = _commentCountResult
 
-
     fun resetPostResult() {
         _postResult.value = Resource.Idle()
     }
 
+    /*
+    DailyEmotion yoksa oluşturma kodu eklenecek
+     */
     fun addPost(emotion : String,content : String){
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -99,6 +103,9 @@ class HomeViewModel @Inject constructor(
                     async {
                         val usernameResult = userRepository.getUsernameByUserId(userId)
                         val postsResult = postRepository.getPostsByUser(userId)
+
+                        println("Username result for userId $userId: $usernameResult")
+                        println("Posts result for userId $userId: $postsResult")
 
                         if (usernameResult.isSuccess && postsResult.isSuccess) {
                             val username = usernameResult.getOrNull()
@@ -148,25 +155,25 @@ class HomeViewModel @Inject constructor(
             try {
                 _postAddLikeResult.value = Resource.Loading()
                 val postLikeResult = postLikesRepository.addLikeToPost(postId)
-                if (postLikeResult.isFailure){
+                if (postLikeResult.isFailure) {
                     _postAddLikeResult.value = Resource.Failure("Beğeni eklenemedi")
-                }else{
+                } else {
                     val userLikeResult = userLikedPostRepository.addLikePost(postId)
-                    if (userLikeResult.isFailure){
+                    if (userLikeResult.isFailure) {
                         postLikesRepository.removeLikeFromPost(postId)
-                        _postResult.value = Resource.Failure("Beğeni eklenemedi")
-                    }
-                    else{
+                        _postAddLikeResult.value = Resource.Failure("Beğeni eklenemedi")
+                    } else {
                         _postAddLikeResult.value = Resource.Success(true)
+                        fetchLikesCount(postId)
+                        checkPostLikeStatus(postId)
                     }
                 }
-
             } catch (e: Exception) {
-                // Hata durumunda hata mesajını güncelle
                 _postAddLikeResult.value = Resource.Failure(e.message ?: "Bir hata oluştu")
             }
         }
     }
+
 
     fun addComment(postId: String, content: String, emotion: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -198,21 +205,20 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _postRemoveLikeResult.value = Resource.Loading()
-
                 val postUnlikeResult = postLikesRepository.removeLikeFromPost(postId)
                 if (postUnlikeResult.isFailure) {
                     _postRemoveLikeResult.value = Resource.Failure("Beğeni kaldırılamadı")
                 } else {
-
                     val userUnlikeResult = userLikedPostRepository.removeLikedPost(postId)
                     if (userUnlikeResult.isFailure) {
                         postLikesRepository.addLikeToPost(postId)
                         _postRemoveLikeResult.value = Resource.Failure("Beğeni kaldırılamadı")
                     } else {
                         _postRemoveLikeResult.value = Resource.Success(true)
+                        fetchLikesCount(postId)
+                        checkPostLikeStatus(postId)
                     }
                 }
-
             } catch (e: Exception) {
                 _postRemoveLikeResult.value = Resource.Failure(e.message ?: "Bir hata oluştu")
             }
@@ -273,20 +279,24 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val isLikedResult = postLikesRepository.isPostLikedByUser(postId)
+                val newPostLikeResults = _postLikeResults.value.toMutableMap()
+
                 if (isLikedResult.isSuccess) {
                     val isLiked = isLikedResult.getOrNull() ?: false
-
-
-                    _postLikeResult.value = if (isLiked) {
-                        Resource.Success(true)//beğenilmiş
+                    newPostLikeResults[postId] = if (isLiked) {
+                        Resource.Success(true)
                     } else {
-                        Resource.Success(false)//beğenilmemiş
+                        Resource.Success(false)
                     }
                 } else {
-                    _postLikeResult.value = Resource.Failure("Beğeni durumu alınamadı")
+                    newPostLikeResults[postId] = Resource.Failure("Beğeni durumu alınamadı")
                 }
+
+                _postLikeResults.value = newPostLikeResults
             } catch (e: Exception) {
-                _postLikeResult.value = Resource.Failure(e.message ?: "Bir hata oluştu")
+                val newPostLikeResults = _postLikeResults.value.toMutableMap()
+                newPostLikeResults[postId] = Resource.Failure(e.message ?: "Bir hata oluştu")
+                _postLikeResults.value = newPostLikeResults
             }
         }
     }
