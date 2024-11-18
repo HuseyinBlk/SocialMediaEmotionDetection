@@ -1,4 +1,6 @@
 
+import android.content.Context.INPUT_METHOD_SERVICE
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
@@ -153,7 +157,7 @@ fun SearchScreen(
                             .padding(paddingValues)
                     ) {
                         items(result.data) { user ->
-                            UserItem(user)
+                            UserItem(user,viewModel)
                         }
                     }
                 }
@@ -191,17 +195,45 @@ fun SearchScreen(
         }
     )
 }
-
-
 @Composable
-fun UserItem(user: User) {
-    // Kullanıcıyı listele
+fun UserItem(
+    user: User,
+    viewModel: SearchViewModel
+) {
+    val openDialog = remember { mutableStateOf(false) }
+    val followCheckResult by viewModel.followCheckResult.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
+    var isFollowing by remember { mutableStateOf(false) }
+
+
+
+    if (openDialog.value) {
+        LaunchedEffect(openDialog.value) {
+            isLoading = true
+            viewModel.checkIfUserIsFollowing(user.userId)
+            isLoading = false
+
+        }
+    }
+    // Takip durumu güncellemesi
+    LaunchedEffect(followCheckResult) {
+        when (followCheckResult) {
+            is Resource.Success -> {
+                isFollowing = (followCheckResult as Resource.Success<Boolean>).data
+            }
+            is Resource.Failure -> {
+                isFollowing = false
+            }
+            else -> Unit
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                // Kullanıcıyı tıklama işlemi
+                openDialog.value = true
             },
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -209,16 +241,125 @@ fun UserItem(user: User) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center // Tüm içeriği yatayda ortalar
         ) {
             Icon(
                 imageVector = Icons.Default.AccountCircle,
                 contentDescription = "Profile Icon",
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(60.dp), // İkon boyutunu büyüttük
                 tint = Color.Gray
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = user.username, style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = user.username,
+                style = MaterialTheme.typography.titleMedium, // Daha büyük bir yazı stili
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
     }
+
+    if (openDialog.value) {
+        UserProfileDialog(
+            openDialog = openDialog,
+            user = user,
+            isLoading = isLoading,
+            isFollowing = isFollowing,
+            onFollowClick = {
+                viewModel.followUser(user.userId)
+                viewModel.checkIfUserIsFollowing(user.userId)
+            },
+            onUnfollowClick = {
+                viewModel.unfollowUser(user.userId)
+                viewModel.checkIfUserIsFollowing(user.userId)
+            }
+        )
+    }
+}
+
+
+@Composable
+fun UserProfileDialog(
+    openDialog: MutableState<Boolean>,
+    user: User,
+    isLoading: Boolean,
+    isFollowing: Boolean,
+    onFollowClick: () -> Unit,
+    onUnfollowClick: () -> Unit
+) {
+    val focusManager = LocalFocusManager.current
+    focusManager.clearFocus()
+    AlertDialog(
+        onDismissRequest = { openDialog.value = false },
+        title = {
+            Text(
+                text = "Profil",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Lütfen bekleyin...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Profile Icon",
+                        modifier = Modifier.size(100.dp),
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = user.username,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = {
+                            if (isFollowing) {
+                                onUnfollowClick()
+                            } else {
+                                onFollowClick()
+                            }
+                        },
+                        modifier = Modifier.padding(top = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFollowing) Color.Red else Color.Blue
+                        )
+                    ) {
+                        Text(
+                            text = if (isFollowing) "Takipten Çık" else "Takip Et",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {}
+    )
 }
