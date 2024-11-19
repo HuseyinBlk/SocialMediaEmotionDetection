@@ -140,7 +140,7 @@ fun MainScreen(
                             PostItem(
                                 username = username,
                                 post = post,
-                                isLiked = isLiked,
+                                initialLiked = isLiked,
                                 onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
                                 onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
                             )

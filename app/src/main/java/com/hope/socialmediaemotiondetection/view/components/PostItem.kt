@@ -1,5 +1,7 @@
 package com.hope.socialmediaemotiondetection.view.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,22 +31,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.hope.socialmediaemotiondetection.model.post.Post
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun PostItem(
     username: String,
     post: Post,
-    isLiked: Boolean,
+    initialLiked: Boolean,
     onLikeClicked: (String) -> Unit,
     onUnlikeClicked: (String) -> Unit,
 ) {
     var likeCount by remember { mutableIntStateOf(post.likesCount) }
-    var isProcessing by remember { mutableStateOf(false) } // İşlem durumu
+    var isLiked by remember { mutableStateOf(initialLiked) }
+    var isProcessing by remember { mutableStateOf(false) }
+    var isAnimating by remember { mutableStateOf(false) }
+
+    LaunchedEffect(initialLiked) {
+        isLiked = initialLiked
+    }
 
     Column(
         modifier = Modifier
@@ -86,24 +94,37 @@ fun PostItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 val likeIcon = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                val likeColor = if (isLiked) MaterialTheme.colorScheme.primary else Color.Gray
+                val likeColor = if (isLiked) Color.Red else Color.Gray
+
+                val scale by animateFloatAsState(
+                    targetValue = if (isAnimating) 1.2f else 1f,
+                    animationSpec = tween(durationMillis = 300),
+                    label = "Like Button Animation"
+                )
 
                 Icon(
                     imageVector = likeIcon,
                     contentDescription = "Like Icon",
                     modifier = Modifier
                         .size(24.dp)
-                        .clickable(enabled = !isProcessing) { // İşlem devam ediyorsa devre dışı
+                        .graphicsLayer(scaleX = scale, scaleY = scale)
+                        .clickable(enabled = !isProcessing) {
                             if (!isProcessing) {
                                 isProcessing = true
+                                isAnimating = true
+
                                 if (isLiked) {
                                     onUnlikeClicked(post.postId)
+                                    likeCount -= 1
                                 } else {
                                     onLikeClicked(post.postId)
+                                    likeCount += 1
                                 }
+                                isLiked = !isLiked
+
                                 kotlinx.coroutines.MainScope().launch {
                                     kotlinx.coroutines.delay(500L)
-                                    likeCount += if (isLiked) -1 else 1
+                                    isAnimating = false
                                     isProcessing = false
                                 }
                             }
@@ -128,7 +149,7 @@ fun PostItem(
                 Text(text = post.commentsCount.toString())
             }
         }
-        HorizontalDivider(modifier = Modifier.padding(top = 7.dp)) // Divider
+        HorizontalDivider(modifier = Modifier.padding(top = 7.dp))
     }
 }
 
