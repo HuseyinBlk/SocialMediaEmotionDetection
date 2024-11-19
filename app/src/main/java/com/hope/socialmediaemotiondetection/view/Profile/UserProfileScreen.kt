@@ -2,6 +2,7 @@ package com.hope.socialmediaemotiondetection.view.Profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,54 +27,6 @@ import com.hope.socialmediaemotiondetection.view.components.PostItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileScreen(user: User) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "User Profile") },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        },
-        bottomBar = {
-            NavigationBar(modifier = Modifier.height(80.dp), containerColor = MaterialTheme.colorScheme.primary) {
-                NavigationBarItem(
-                    onClick = { /* Home tıklama işlemi */ },
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home Icon", tint = Color.White) }
-                )
-                NavigationBarItem(
-                    onClick = { /* Search tıklama işlemi */ },
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon", tint = Color.White) }
-                )
-                NavigationBarItem(
-                    onClick = { /* Profile tıklama işlemi */ },
-                    selected = true,
-                    icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon", tint = Color.White) }
-                )
-            }
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                // Profil başlığı ve fotoğraf
-                ProfileHeader(user = user)
-
-                // Kullanıcının paylaşımlarını listele
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-
-                }
-            }
-        }
-    )
-}
-
-@Composable
-fun ProfileHeader(user: User) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,6 +39,7 @@ fun ProfileHeader(user: User) {
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
+                .clickable(onClick = {})
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = user.username, style = MaterialTheme.typography.titleMedium)

@@ -5,6 +5,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -57,7 +58,7 @@ fun SearchScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(renk4),
+                .background(Color.Transparent),
             contentAlignment = Alignment.Center
         ) {
             OutlinedTextField(
@@ -68,7 +69,7 @@ fun SearchScreen(
                 placeholder = {
                     Text(
                         text = "Aramak İstediğiniz Kullanıcıyı Giriniz.",
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
+                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
                     )
                 },
                 singleLine = true,
@@ -77,7 +78,7 @@ fun SearchScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search Icon",
-                        tint = Color.White,
+                        tint = Color.Black,
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .clickable {}
@@ -192,14 +193,14 @@ fun UserItem(
                     openDialog.value = true
                 }
             },
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center // Tüm içeriği yatayda ortalar
+            horizontalArrangement = Arrangement.Start // Tüm içeriği yatayda ortalar
         ) {
             Icon(
                 imageVector = Icons.Default.AccountCircle,
@@ -213,6 +214,7 @@ fun UserItem(
                 style = MaterialTheme.typography.titleMedium, // Daha büyük bir yazı stili
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
+
         }
     }
 
@@ -292,6 +294,11 @@ fun UserProfileDialog(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = user.bio ?:" ",
+                        style = MaterialTheme.typography.titleMedium, // Daha büyük bir yazı stili
+                        textAlign = TextAlign.Start
+                    )
 
                     Button(
                         onClick = {

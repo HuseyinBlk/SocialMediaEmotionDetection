@@ -41,7 +41,6 @@ fun InfoScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(brush = Brush.verticalGradient(
                 0f to renk1,
                 0.25f to renk2,

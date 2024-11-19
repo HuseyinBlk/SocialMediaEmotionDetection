@@ -84,7 +84,6 @@ fun LoginScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(
                 brush = Brush.verticalGradient(
                     0f to renk1,
