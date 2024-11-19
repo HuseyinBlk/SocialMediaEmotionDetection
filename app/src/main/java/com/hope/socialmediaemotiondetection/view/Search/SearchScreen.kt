@@ -1,21 +1,23 @@
+package com.hope.socialmediaemotiondetection.view.Search
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
@@ -25,126 +27,85 @@ import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.viewmodel.SearchViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
-    val userSearchResult by viewModel.userSearchResult.collectAsState()
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ){
-                        OutlinedTextField(
-                            value = searchText,
-                            onValueChange = {
-                                searchText = it
-                                viewModel.searchUsersByUsername(searchText.text)},
-                            placeholder = {
-                                Text(
-                                    text = "Aramak İstediğiniz Kullanıcıyı Giriniz.",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = Color.White
-                                    )
-                                )
-                            },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(1f),
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Search Icon",
-                                    tint = Color.White,
-                                    modifier = Modifier
-                                        .padding(end = 8.dp)
-                                        .clickable {
 
-                                        }
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                errorIndicatorColor = Color.Transparent,
-                                focusedTextColor = DarkTextColor,
-                                unfocusedTextColor = DarkTextColor,
-                                focusedPlaceholderColor = DarkTextColor,
-                                unfocusedPlaceholderColor = DarkTextColor,
-                                focusedLeadingIconColor = DarkTextColor,
-                                unfocusedLeadingIconColor = DarkTextColor,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent
-                            )
-                        )
-                    }
+    val textFieldValueSaver =
+        androidx.compose.runtime.saveable.Saver<TextFieldValue, Pair<String, TextRange>>(
+            save = { value -> Pair(value.text, value.selection) },
+            restore = { (text, selection) -> TextFieldValue(text, selection) }
+        )
+
+    var searchText by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
+    LaunchedEffect(searchText.text) {
+        viewModel.searchUsersByUsername(searchText.text)
+    }
+    val userSearchResult by viewModel.userSearchResult.collectAsState()
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Spacer(Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(renk4),
+            contentAlignment = Alignment.Center
+        ) {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = {
+                    searchText = it
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = renk4
+                placeholder = {
+                    Text(
+                        text = "Aramak İstediğiniz Kullanıcıyı Giriniz.",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
+                    )
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(1f),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .clickable {}
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = DarkTextColor,
+                    unfocusedTextColor = DarkTextColor,
+                    focusedPlaceholderColor = DarkTextColor,
+                    unfocusedPlaceholderColor = DarkTextColor,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
                 )
             )
-        },
-        bottomBar = {
-            NavigationBar (
-                modifier = Modifier.height(80.dp),
-                containerColor = renk4
-            ){
-                NavigationBarItem(
-                    onClick = {
-                        // Tıklama olayını buraya ekleyin
-                    },
-                    selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Home Icon",
-                            tint = Color.White
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    onClick = {
-                        // Tıklama olayını buraya ekleyin
-                    },
-                    selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon",
-                            tint = Color.White
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    onClick = {
-                        // Tıklama olayını buraya ekleyin
-                    },
-                    selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Profile Icon",
-                            tint = Color.White
-                        )
-                    }
-                )
-            }
-        },
-        content = { paddingValues ->
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f) // İçeriğin geri kalan alanı kaplaması için
+        ) {
             var textState by remember { mutableStateOf("") }
             when (val result = userSearchResult) {
                 is Resource.Loading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
@@ -152,21 +113,17 @@ fun SearchScreen(
                 }
                 is Resource.Success -> {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         items(result.data) { user ->
-                            UserItem(user,viewModel)
+                            UserItem(user, viewModel)
                         }
                     }
                 }
                 is Resource.Failure -> {
                     textState = result.message ?: "Bir hata oluştu"
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -178,9 +135,7 @@ fun SearchScreen(
                 }
                 else -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         textState = ""
@@ -193,7 +148,7 @@ fun SearchScreen(
                 }
             }
         }
-    )
+    }
 }
 @Composable
 fun UserItem(
@@ -204,15 +159,14 @@ fun UserItem(
     val followCheckResult by viewModel.followCheckResult.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
     var isFollowing by remember { mutableStateOf(false) }
-
-
+    val context = LocalContext.current
+    val inputMethodManager = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
     if (openDialog.value) {
         LaunchedEffect(openDialog.value) {
             isLoading = true
             viewModel.checkIfUserIsFollowing(user.userId)
             isLoading = false
-
         }
     }
     // Takip durumu güncellemesi
@@ -231,9 +185,12 @@ fun UserItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
-                openDialog.value = true
+                CoroutineScope(Dispatchers.Main).launch {
+                    inputMethodManager.hideSoftInputFromWindow((context as? android.app.Activity)?.currentFocus?.windowToken, 0)
+                    delay(50) // Klavyenin kapanması için kısa bir gecikme
+                    openDialog.value = true
+                }
             },
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -287,8 +244,6 @@ fun UserProfileDialog(
     onFollowClick: () -> Unit,
     onUnfollowClick: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    focusManager.clearFocus()
     AlertDialog(
         onDismissRequest = { openDialog.value = false },
         title = {

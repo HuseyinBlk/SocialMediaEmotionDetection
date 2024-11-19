@@ -1,20 +1,10 @@
 package com.hope.socialmediaemotiondetection.view
 
-import GetUsernameScreen
-import SearchScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.hope.socialmediaemotiondetection.view.Home.MainScreen
-import com.hope.socialmediaemotiondetection.view.Info.InfoScreen
-import com.hope.socialmediaemotiondetection.view.Login.LoginScreen
-import com.hope.socialmediaemotiondetection.view.Loading.CheckUserNameScreen
-import com.hope.socialmediaemotiondetection.view.registration.RegistrationScreen
-import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
+import com.hope.socialmediaemotiondetection.view.AppStart.SocialMediaEmotionDetectionApp
 
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            /*
             SocialMediaEmotionDetectionTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "checkUserNameScreen") {
@@ -60,7 +51,8 @@ class MainActivity : ComponentActivity() {
                         SearchScreen()
                     }
                 }
-            }
+            }*/
+            SocialMediaEmotionDetectionApp()
         }
     }
 }

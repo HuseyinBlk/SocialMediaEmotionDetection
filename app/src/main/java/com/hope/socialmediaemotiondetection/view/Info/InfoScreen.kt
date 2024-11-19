@@ -33,9 +33,9 @@ import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
+
 @Composable
 fun InfoScreen(
-    modifier: Modifier = Modifier,
     navController: NavController
 ){
     Column (

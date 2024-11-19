@@ -15,26 +15,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items//ÇOK ÖNEMLİ
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,19 +37,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.model.post.Post
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.view.components.PostItem
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.viewmodel.HomeViewModel
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun MainScreen(
-    navController: NavController,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     var inputValue by remember { mutableStateOf("") }
@@ -90,152 +77,112 @@ fun MainScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = @Composable{ Text("Home", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-                actions = {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Theme Toggle Icon"
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            NavigationBar(
-                modifier = Modifier.height(80.dp),
-                containerColor = renk4
-            ){
-                NavigationBarItem(
-                    onClick = { /* Tıklama olayını buraya ekleyin */ },
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home Icon") }
-                )
-                NavigationBarItem(
-                    onClick = { navController.navigate("searchScreen") },
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon") }
-                )
-                NavigationBarItem(
-                    onClick = { /* Tıklama olayını buraya ekleyin */ },
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon") }
-                )
-            }
-        }
-    ) { innerPadding ->
 
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.White)
-                .padding(innerPadding)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Yeni gönderi alanı
-            Row(
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "User Icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(shape = CircleShape)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TextField(
+                value = inputValue,
+                onValueChange = { inputValue = it },
+                placeholder = { Text("Bugün Nasılsın?") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "User Icon",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(shape = CircleShape)
+                    .weight(1f),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                TextField(
-                    value = inputValue,
-                    onValueChange = { inputValue = it },
-                    placeholder = { Text("Bugün Nasılsın?") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        errorContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-                IconButton(onClick = {
-                    homeViewModel.addPost("happy", inputValue)
-                    inputValue = ""
-                }) {
-                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send Icon")
-                }
+            )
+            IconButton(onClick = {
+                homeViewModel.addPost("happy", inputValue)
+                inputValue = ""
+            }) {
+                Icon(imageVector = Icons.Default.Send, contentDescription = "Send Icon")
             }
+        }
 
-            HorizontalDivider()
+        HorizontalDivider()
 
-            LazyColumn {
-                when (getAllPost) {
-                    is Resource.Success -> {
-                        val postsMap = (getAllPost as Resource.Success<Map<String, List<Post>>>).data
-                        postsMap.forEach { (username, posts) ->
-                            items(posts) { post ->
-                                homeViewModel.checkPostLikeStatus(post.postId)
-                                val isLiked = when (val result = postLikeResults[post.postId]) {
-                                    is Resource.Success -> result.data
-                                    is Resource.Failure -> false
-                                    else -> false
-                                }
-
-                                PostItem(
-                                    username = username,
-                                    post = post,
-                                    isLiked = isLiked,
-                                    onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
-                                    onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
-                                )
+        LazyColumn {
+            when (getAllPost) {
+                is Resource.Success -> {
+                    val postsMap = (getAllPost as Resource.Success<Map<String, List<Post>>>).data
+                    postsMap.forEach { (username, posts) ->
+                        items(posts) { post ->
+                            homeViewModel.checkPostLikeStatus(post.postId)
+                            val isLiked = when (val result = postLikeResults[post.postId]) {
+                                is Resource.Success -> result.data
+                                is Resource.Failure -> false
+                                else -> false
                             }
-                        }
-                    }
-                    is Resource.Failure -> {
-                        item {
-                            Text(
-                                text = (getAllPost as Resource.Failure).message,
-                                color = Color.Red,
-                                modifier = Modifier.padding(16.dp)
+
+                            PostItem(
+                                username = username,
+                                post = post,
+                                isLiked = isLiked,
+                                onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
+                                onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
                             )
                         }
                     }
-                    is Resource.Loading -> {
-                        item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(48.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 4.dp
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Gönderiler yükleniyor...",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
+                }
+                is Resource.Failure -> {
+                    item {
+                        Text(
+                            text = (getAllPost as Resource.Failure).message,
+                            color = Color.Red,
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
-                    else -> {
-                        item {
+                }
+                is Resource.Loading -> {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 4.dp
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Henüz gönderi yok.",
-                                modifier = Modifier.padding(16.dp)
+                                text = "Gönderiler yükleniyor...",
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
+                    }
+                }
+                else -> {
+                    item {
+                        Text(
+                            text = "Henüz gönderi yok.",
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
                 }
             }
