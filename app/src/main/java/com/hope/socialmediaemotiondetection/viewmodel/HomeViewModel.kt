@@ -2,6 +2,7 @@ package com.hope.socialmediaemotiondetection.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.hope.socialmediaemotiondetection.model.post.Post
 import com.hope.socialmediaemotiondetection.model.post.comment.PostComments
@@ -49,6 +50,8 @@ class HomeViewModel @Inject constructor(
     private val _getAllPost = MutableStateFlow<Resource<Map<String,List<Post>>>>(Resource.Idle())
     val getAllPost : StateFlow<Resource<Map<String,List<Post>>>> get() = _getAllPost
 
+    private val _gelAllPostShorted = MutableStateFlow<Resource<List<Pair<String, Post>>>>(Resource.Idle())
+    val gelAllPostShorted: StateFlow<Resource<List<Pair<String, Post>>>> get() = _gelAllPostShorted
 
 
     private val _postLikeResults = MutableStateFlow<Map<String, Resource<Boolean>>>(emptyMap())
@@ -106,17 +109,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun sortPostsByCreatedAt(posts: Map<String, List<Post>>): List<Pair<String, Post>> {
+        _gelAllPostShorted.value = Resource.Loading()
+        return posts.flatMap { (username, postList) ->
+            postList.map { post -> username to post }
+        }
+            .sortedByDescending { (_, post) ->
+                val date = when (val createdAt = post.createdAt) {
+                    is Timestamp -> createdAt.toDate()
+                    is String -> SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse(createdAt)
+                    is Long -> Date(createdAt)
+                    else -> null
+                }
+                date
+            }
+    }
+
     private fun fetchPostsForAllUsers(userIds: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
+            _gelAllPostShorted.value = Resource.Loading()
             try {
                 val postsMap = mutableMapOf<String, List<Post>>()
                 val postsList = userIds.map { userId ->
                     async {
                         val usernameResult = userRepository.getUsernameByUserId(userId)
                         val postsResult = postRepository.getPostsByUser(userId)
-
-                        println("Username result for userId $userId: $usernameResult")
-                        println("Posts result for userId $userId: $postsResult")
 
                         if (usernameResult.isSuccess && postsResult.isSuccess) {
                             val username = usernameResult.getOrNull()
@@ -135,10 +152,13 @@ class HomeViewModel @Inject constructor(
                 postsList.filterNotNull().forEach { (username, posts) ->
                     postsMap[username] = posts
                 }
-                _getAllPost.value = Resource.Success(postsMap)
+
+                val sortedPosts = sortPostsByCreatedAt(postsMap)
+
+                _gelAllPostShorted.value = Resource.Success(sortedPosts)
 
             } catch (e: Exception) {
-                _getAllPost.value = Resource.Failure(e.message ?: "An error occurred")
+                _gelAllPostShorted.value = Resource.Failure(e.message ?: "An error occurred")
             }
         }
     }

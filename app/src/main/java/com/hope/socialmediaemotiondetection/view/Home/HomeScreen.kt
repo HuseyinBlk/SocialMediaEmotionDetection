@@ -52,6 +52,7 @@ fun MainScreen(
     var inputValue by remember { mutableStateOf("") }
     val postResult by homeViewModel.postResult.collectAsState()
     val getAllPost by homeViewModel.getAllPost.collectAsState()
+    val gelAllPostShorted by homeViewModel.gelAllPostShorted.collectAsState()
     val postLikeResults by homeViewModel.postLikeResults.collectAsState()
     val context = LocalContext.current
 
@@ -125,32 +126,30 @@ fun MainScreen(
         HorizontalDivider()
 
         LazyColumn {
-            when (getAllPost) {
+            when (gelAllPostShorted) {
                 is Resource.Success -> {
-                    val postsMap = (getAllPost as Resource.Success<Map<String, List<Post>>>).data
-                    postsMap.forEach { (username, posts) ->
-                        items(posts) { post ->
-                            homeViewModel.checkPostLikeStatus(post.postId)
-                            val isLiked = when (val result = postLikeResults[post.postId]) {
-                                is Resource.Success -> result.data
-                                is Resource.Failure -> false
-                                else -> false
-                            }
-
-                            PostItem(
-                                username = username,
-                                post = post,
-                                initialLiked = isLiked,
-                                onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
-                                onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
-                            )
+                    val postsList = (gelAllPostShorted as Resource.Success<List<Pair<String, Post>>>).data
+                    items(postsList) { (username, post) ->
+                        homeViewModel.checkPostLikeStatus(post.postId)
+                        val isLiked = when (val result = postLikeResults[post.postId]) {
+                            is Resource.Success -> result.data
+                            is Resource.Failure -> false
+                            else -> false
                         }
+
+                        PostItem(
+                            username = username,
+                            post = post,
+                            initialLiked = isLiked,
+                            onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
+                            onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
+                        )
                     }
                 }
                 is Resource.Failure -> {
                     item {
                         Text(
-                            text = (getAllPost as Resource.Failure).message,
+                            text = (gelAllPostShorted as Resource.Failure).message,
                             color = Color.Red,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -180,7 +179,7 @@ fun MainScreen(
                 else -> {
                     item {
                         Text(
-                            text = "Henüz gönderi yok.",
+                            text = "Henüz gönderi yok veya Internet Bağlantınızı kontrol ediniz",
                             modifier = Modifier.padding(16.dp)
                         )
                     }
