@@ -3,6 +3,7 @@ package com.hope.socialmediaemotiondetection.dependencyInjection
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.hope.socialmediaemotiondetection.repository.AuthRepository
+import com.hope.socialmediaemotiondetection.repository.EmotionRepository
 import com.hope.socialmediaemotiondetection.repository.PostCommentRepository
 import com.hope.socialmediaemotiondetection.repository.PostLikesRepository
 import com.hope.socialmediaemotiondetection.repository.PostRepository
@@ -11,10 +12,14 @@ import com.hope.socialmediaemotiondetection.repository.UserDailyEmotionRepositor
 import com.hope.socialmediaemotiondetection.repository.UserFollowsRepository
 import com.hope.socialmediaemotiondetection.repository.UserLikedPostRepository
 import com.hope.socialmediaemotiondetection.repository.UserRepository
+import com.hope.socialmediaemotiondetection.service.EmotionApiService
+import com.hope.socialmediaemotiondetection.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
@@ -86,5 +91,26 @@ object AppModule {
     @Singleton
     fun provideUserLikedPostRepository(auth: FirebaseAuth,firestore: FirebaseFirestore) : UserLikedPostRepository{
         return UserLikedPostRepository(auth, firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmotionApiService(retrofit: Retrofit): EmotionApiService {
+        return retrofit.create(EmotionApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmotionRepository(apiService: EmotionApiService): EmotionRepository {
+        return EmotionRepository(apiService)
     }
 }
