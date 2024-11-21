@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 import com.hope.socialmediaemotiondetection.viewmodel.SearchViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,7 +79,7 @@ fun SearchScreen(
                         contentDescription = "Search Icon",
                         tint = Color.Black,
                         modifier = Modifier
-                            .padding(end = 8.dp)
+                            .padding(end = 20.dp)
                             .clickable {}
                     )
                 },
@@ -95,6 +94,8 @@ fun SearchScreen(
                     unfocusedContainerColor = Color.Transparent
                 )
             )
+            Divider(modifier = Modifier.fillMaxWidth()
+                .padding(top = 75.dp))
         }
 
         Box(

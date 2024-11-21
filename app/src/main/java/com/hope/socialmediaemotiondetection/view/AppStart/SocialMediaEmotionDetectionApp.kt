@@ -1,5 +1,10 @@
 package com.hope.socialmediaemotiondetection.view.AppStart
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -13,8 +18,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,11 +54,15 @@ fun SocialMediaEmotionDetectionApp() {
                     "userProfileScreen" -> {
                         TopAppBar(
                             title = {},
+                            modifier = Modifier.fillMaxHeight(0.08f),
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.White
+                            ),
                             actions = {
                                 // Özel butonlar eklenebilir
                                 Icon(
                                     imageVector = Icons.Default.Settings,
-                                    contentDescription = "Setting Icon",
+                                    contentDescription = "Settings Icon",
                                     modifier = Modifier.padding(end = 5.dp)
                                 )
                             }
@@ -98,7 +109,7 @@ fun SocialMediaEmotionDetectionApp() {
                 composable("userDetailsScreen") { GetUsernameScreen(navController = navController) }
                 composable("mainScreen") { MainScreen() }
                 composable("searchScreen") { SearchScreen() }
-                composable("userProfileScreen"){ UserProfileScreen(User("31","Hüseyin","huseyinsbalik@gmail.com",null,null,emptyList())) }
+                composable("userProfileScreen"){ UserProfileScreen(User("31","Hüseyin","huseyinsbalik@gmail.com",null,"Kun fe yekün\nBabasının prensesi \nSevgilisinin hamı \nAnasının canı..\nSümeyye’nin kankası\nTarz değil farz",emptyList())) }
             }
         }
     }
