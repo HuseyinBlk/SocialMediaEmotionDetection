@@ -115,7 +115,7 @@ fun MainScreen(
                 )
             )
             IconButton(onClick = {
-                homeViewModel.addPost("happy", inputValue)
+                homeViewModel.addPost(inputValue)
                 inputValue = ""
             }) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Send Icon")

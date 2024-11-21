@@ -9,6 +9,7 @@ import com.hope.socialmediaemotiondetection.model.post.comment.Comment
 import com.hope.socialmediaemotiondetection.model.post.comment.PostComments
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.repository.AuthRepository
+import com.hope.socialmediaemotiondetection.repository.EmotionRepository
 import com.hope.socialmediaemotiondetection.repository.PostCommentRepository
 import com.hope.socialmediaemotiondetection.repository.PostLikesRepository
 import com.hope.socialmediaemotiondetection.repository.PostRepository
@@ -39,7 +40,8 @@ class HomeViewModel @Inject constructor(
     private val userCommentsRepository: UserCommentsRepository,
     private val authRepository: AuthRepository,
     private val userFollowsRepository: UserFollowsRepository,
-    private val userDailyEmotionRepository: UserDailyEmotionRepository
+    private val userDailyEmotionRepository: UserDailyEmotionRepository,
+    private val emotionRepository: EmotionRepository
 ) : ViewModel() {
 
     private val _postResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
@@ -88,22 +90,33 @@ class HomeViewModel @Inject constructor(
         _postResult.value = Resource.Idle()
     }
 
-    fun addPost(emotion: String, content: String) {
+    fun addPost(content: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                val postResult = postRepository.addPost(emotion, content)
+                val emotionResult = emotionRepository.analyzeEmotion(content)
+                if (emotionResult is Resource.Success) {
+                    val emotion = emotionResult.data.prediction
+                    val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-                if (postResult.isSuccess) {
-                    val emotionUpdateResult = userDailyEmotionRepository.updateDailyEmotion(currentDate, emotion, 10)
+                    val postResult = postRepository.addPost(emotion, content)
 
-                    _postResult.value = if (emotionUpdateResult.isSuccess) {
-                        Resource.Success(true)
+                    if (postResult.isSuccess) {
+                        // Günlük emotion güncellemesi
+                        val emotionUpdateResult = userDailyEmotionRepository.updateDailyEmotion(
+                            currentDate,
+                            emotion,
+                            10
+                        )
+                        _postResult.value = if (emotionUpdateResult.isSuccess) {
+                            Resource.Success(true)
+                        } else {
+                            Resource.Failure("Post oluşturuldu ancak günlük emotion güncellenemedi.")
+                        }
                     } else {
-                        Resource.Failure("Post oluşturuldu ancak günlük emotion güncellenemedi.")
+                        _postResult.value = Resource.Failure("Post oluşturulamadı.")
                     }
-                } else {
-                    _postResult.value = Resource.Failure("Post oluşturulamadı.")
+                } else if (emotionResult is Resource.Failure) {
+                    _postResult.value = Resource.Failure("Emotion analizi başarısız: ${emotionResult.message}")
                 }
             } catch (e: Exception) {
                 _postResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
