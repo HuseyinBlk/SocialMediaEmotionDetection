@@ -6,6 +6,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/*
+Utils tek seferlik kontroller için kullanılıyor bunu ayrı tuttum
+kullanıcı tek seferlik Username kullanılabilirliğini kontrol ediyorum
+*/
+
 class CheckUserName @Inject constructor(
     private val userNameCheck: UserNameCheckRepository
 ) {
@@ -16,11 +21,9 @@ class CheckUserName @Inject constructor(
                 val result = userNameCheck.getUsernameByUserId(userId)
                 return@withContext when {
                     result.isSuccess -> {
-                        // Eğer username varsa (null değilse), username zaten var, o yüzden false döndürüyoruz
                         result.getOrNull() != ""
                     }
                     result.isFailure -> {
-                        // Eğer hata varsa, false döndürüyoruz
                         Log.e("UsernameCheck", "Error: ${result.exceptionOrNull()}")
                         false
                     }

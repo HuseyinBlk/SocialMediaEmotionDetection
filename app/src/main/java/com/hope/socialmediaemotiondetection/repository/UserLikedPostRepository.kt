@@ -6,6 +6,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+Bir postu beğendiğinde User altında gerçekleşen işlemler
+ */
+
 class UserLikedPostRepository @Inject constructor(
     private val auth : FirebaseAuth,
     private val firestore: FirebaseFirestore

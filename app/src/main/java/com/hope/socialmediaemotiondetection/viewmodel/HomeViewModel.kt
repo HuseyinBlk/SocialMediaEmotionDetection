@@ -30,6 +30,15 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+
+/*
+Viewmodel MVVM mimarisinde Model ve diğer kodların toplanıp fonksiyonlar halinde yazılır view altında yazılamsı yerine
+burada yazılıp view içinde çağırılmasına yarar
+temiz bir yapı sunar
+@HiltViewModel anatasyonu aslında kolaylık sağlar hilt burada viewmodel habire oluşturmamız gerken factory sınfını kendi oluşturur
+Home Screenin arka plan işlemlerini burada tanımlıyorum MutableStateFlow observable değişken olup tek
+bir değişimde anında kullanıcı arayüzünde değişime sebep olur
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,

@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/*
+Arama ekranını burada toparladık
+ */
+
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val userRepository: UserRepository,

@@ -10,6 +10,10 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+/*
+User Altındaki Duygu durumu koleksiyonuna değişimleri burada güncelliyoruz
+ */
+
 class UserDailyEmotionRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore

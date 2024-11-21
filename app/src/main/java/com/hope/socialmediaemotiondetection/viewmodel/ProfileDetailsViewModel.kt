@@ -20,6 +20,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/*
+Profile detaylarının ekranın arka planını burada toparladık
+ */
+
 @HiltViewModel
 class ProfileDetailsViewModel @Inject constructor(
     private val userRepository: UserRepository,

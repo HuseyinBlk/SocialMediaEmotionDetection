@@ -6,6 +6,11 @@ import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.service.EmotionApiService
 import javax.inject.Inject
 
+/*
+Burası duygu durumu yapıtığımız firebaseden bağımsız olan yerdir Retrofit kütüphanesi yardımı ile
+Oluşturumuz post ve cevap almaya yarıyor
+ */
+
 class EmotionRepository @Inject constructor(
     private val apiService: EmotionApiService
 ) {

@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/*
+Giriş ve kayıt işlemlerinin kodlarını burada toparladım
+ */
+
 @HiltViewModel
 class LoginAndRegisterViewModel @Inject constructor(
     private val authRepository: AuthRepository

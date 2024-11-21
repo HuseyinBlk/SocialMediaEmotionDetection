@@ -1,5 +1,7 @@
 package com.hope.socialmediaemotiondetection.model.user
-
+/*
+Kullanıcı detayları
+ */
 
 data class User(
     val userId: String = "",

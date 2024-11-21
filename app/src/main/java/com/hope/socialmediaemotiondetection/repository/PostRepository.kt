@@ -7,6 +7,10 @@ import com.hope.socialmediaemotiondetection.model.post.Post
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+Postun genel kodları buradadır
+ */
+
 class PostRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore

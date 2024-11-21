@@ -4,6 +4,10 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+/*
+UserNameCheck aslında kullanıcı adı ile username kontrol eden yardımcı bir repository
+ */
+
 
 class UserNameCheckRepository (private val firestore: FirebaseFirestore) {
     suspend fun getUsernameByUserId(userId: String): Result<String?> {

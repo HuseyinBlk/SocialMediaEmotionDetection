@@ -8,6 +8,12 @@ import com.hope.socialmediaemotiondetection.model.post.comment.PostComments
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+Posta yorum yapma api addCommentToPost Posta Yorum ekler
+firestore.collection işaret eder
+document ismine göre
+ */
+
 class PostCommentRepository @Inject constructor(
     private val auth : FirebaseAuth,
     private val firestore: FirebaseFirestore
@@ -50,7 +56,9 @@ class PostCommentRepository @Inject constructor(
             Result.failure(e)
         }
     }
-
+    /*
+    Posta göre yorumları ekler
+     */
     suspend fun getCommentsForPost(postId: String): Result<PostComments> {
         return try {
             val commentsList = mutableListOf<Comment>()
@@ -71,6 +79,9 @@ class PostCommentRepository @Inject constructor(
         }
     }
 
+    /*
+    Yorum sayısını getirir
+     */
     suspend fun getCommentsCount(postId: String): Result<Int> {
         return try {
             val snapshot = firestore.collection("posts").document(postId).get().await()
@@ -80,7 +91,9 @@ class PostCommentRepository @Inject constructor(
             Result.failure(e)
         }
     }
-
+    /*
+    Yorum silmeye yarar
+     */
     suspend fun removeCommentFromPost(postId: String, commentId: String): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
 

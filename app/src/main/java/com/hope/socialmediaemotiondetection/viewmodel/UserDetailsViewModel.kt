@@ -1,6 +1,5 @@
 package com.hope.socialmediaemotiondetection.viewmodel
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hope.socialmediaemotiondetection.model.result.Resource
@@ -11,6 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+/*
+Kayıt olduktan sonraki çıkan Detaylar sınıfının arka plan kodları
+ */
 
 @HiltViewModel
 class UserDetailsViewModel @Inject constructor(

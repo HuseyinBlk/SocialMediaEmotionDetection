@@ -10,6 +10,10 @@ import com.hope.socialmediaemotiondetection.model.user.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+Genel olarak tüm kullanıcı işlemeleri detay ekleme vb herşey
+ */
+
 class UserRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore

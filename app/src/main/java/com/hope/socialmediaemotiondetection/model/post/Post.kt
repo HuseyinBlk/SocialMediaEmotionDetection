@@ -1,5 +1,9 @@
 package com.hope.socialmediaemotiondetection.model.post
 
+/*
+Post bilgileri tutuluyor tüm ayrıntılarıyla
+ */
+
 data class Post(
     val postId: String = "",
     val content: String = "",

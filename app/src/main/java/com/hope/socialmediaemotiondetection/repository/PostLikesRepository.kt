@@ -8,6 +8,11 @@ import com.hope.socialmediaemotiondetection.model.post.likes.PostLikes
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+Post Liked bilgisini tutan collection güncellemeye yarar beğendiğinde olası sonuçları gösterir
+beğeni ekleme çekme ve beğeni silme
+ */
+
 class PostLikesRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore

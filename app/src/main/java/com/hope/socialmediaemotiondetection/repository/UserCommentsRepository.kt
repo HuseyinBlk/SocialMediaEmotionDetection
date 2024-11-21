@@ -7,6 +7,10 @@ import com.hope.socialmediaemotiondetection.model.user.comment.Comment
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/*
+User yorum ekleme işlemeleri burada
+ */
+
 class UserCommentsRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
