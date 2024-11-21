@@ -3,8 +3,9 @@ package com.hope.socialmediaemotiondetection.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue
+import com.hope.socialmediaemotiondetection.model.post.CommentWithUsername
 import com.hope.socialmediaemotiondetection.model.post.Post
+import com.hope.socialmediaemotiondetection.model.post.comment.Comment
 import com.hope.socialmediaemotiondetection.model.post.comment.PostComments
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.repository.AuthRepository
@@ -68,7 +69,8 @@ class HomeViewModel @Inject constructor(
 
 
 
-
+    private val _getAllCommentUserName = MutableStateFlow<Resource<List<CommentWithUsername>>>(Resource.Idle())
+    val getAllCommentUserName : MutableStateFlow<Resource<List<CommentWithUsername>>> get() = _getAllCommentUserName
 
     private val _postCommentsResult = MutableStateFlow<Resource<PostComments>>(Resource.Idle())
     val postCommentsResult: StateFlow<Resource<PostComments>> get() = _postCommentsResult
@@ -334,7 +336,7 @@ class HomeViewModel @Inject constructor(
                 if (commentCountResult.isSuccess) {
                     _commentCountResult.value = Resource.Success(commentCountResult.getOrDefault(0))
                 } else {
-                    _commentCountResult.value = Resource.Failure("Beğeni sayısı alınamadı")
+                    _commentCountResult.value = Resource.Failure("Yorum sayısı alınamadı")
                 }
             } catch (e: Exception) {
                 _commentCountResult.value = Resource.Failure(e.message ?: "Bir hata oluştu")
@@ -368,7 +370,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun fetchCommentsForPost(postId: String) {
+    private fun fetchCommentsForPost(postId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _postCommentsResult.value = Resource.Loading()
@@ -389,4 +391,44 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
+
+    fun fetchCommentsWithUsernames(postId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Yükleniyor durumu
+                _getAllCommentUserName.value = Resource.Loading()
+
+                // Yorumları alıyoruz
+                val commentsResult = postCommentRepository.getCommentsForPost(postId)
+                if (commentsResult.isSuccess) {
+                    val comments = commentsResult.getOrNull()
+
+                    if (comments != null) {
+                        // Yorumları ve kullanıcı isimlerini birleştirmek için liste oluşturuyoruz
+                        val usernameDeferred = comments.comments.map { comment ->
+                            async {
+                                val username = userRepository.getUsernameByUserId(comment.userId)
+                                // Yorum ile birlikte kullanıcı adını alıyoruz
+                                CommentWithUsername(comment, username.toString())
+                            }
+                        }
+
+                        // Sonuçları bekleyip, başarı durumunu güncelliyoruz
+                        val commentsWithUsernamesResult = usernameDeferred.awaitAll()
+                        _getAllCommentUserName.value = Resource.Success(commentsWithUsernamesResult)
+                    } else {
+                        // Yorumlar null ise hata durumu
+                        _getAllCommentUserName.value = Resource.Failure("Yorumlar alınamadı")
+                    }
+                } else {
+                    // Eğer yorumlar alınamazsa başarısızlık durumu
+                    _getAllCommentUserName.value = Resource.Failure("Yorumlar alınamadı")
+                }
+            } catch (e: Exception) {
+                // Beklenmeyen hata durumunda
+                _getAllCommentUserName.value = Resource.Failure(e.message ?: "Bir hata oluştu")
+            }
+        }
+    }
 }

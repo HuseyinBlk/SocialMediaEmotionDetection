@@ -51,7 +51,6 @@ fun MainScreen(
 ) {
     var inputValue by remember { mutableStateOf("") }
     val postResult by homeViewModel.postResult.collectAsState()
-    val getAllPost by homeViewModel.getAllPost.collectAsState()
     val gelAllPostShorted by homeViewModel.gelAllPostShorted.collectAsState()
     val postLikeResults by homeViewModel.postLikeResults.collectAsState()
     val context = LocalContext.current
@@ -142,7 +141,9 @@ fun MainScreen(
                             post = post,
                             initialLiked = isLiked,
                             onLikeClicked = { postId -> homeViewModel.addLikedPost(postId, emotion = post.emotion) },
-                            onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) }
+                            onUnlikeClicked = { postId -> homeViewModel.removeLikedPost(postId, emotion = post.emotion) },
+                            onCommentAdded = { comment -> homeViewModel.addComment(post.postId, comment, post.emotion)},
+                            viewModel = homeViewModel
                         )
                     }
                 }
