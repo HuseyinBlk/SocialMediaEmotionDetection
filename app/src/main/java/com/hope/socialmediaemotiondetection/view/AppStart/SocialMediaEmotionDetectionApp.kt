@@ -1,6 +1,7 @@
 package com.hope.socialmediaemotiondetection.view.AppStart
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -27,7 +29,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.hope.socialmediaemotiondetection.model.user.User
+import com.hope.socialmediaemotiondetection.repository.AuthRepository
 import com.hope.socialmediaemotiondetection.view.Home.MainScreen
 import com.hope.socialmediaemotiondetection.view.Info.InfoScreen
 import com.hope.socialmediaemotiondetection.view.Loading.CheckUserNameScreen
@@ -64,6 +69,17 @@ fun SocialMediaEmotionDetectionApp() {
                                     imageVector = Icons.Default.Settings,
                                     contentDescription = "Settings Icon",
                                     modifier = Modifier.padding(end = 5.dp)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ExitToApp,
+                                    contentDescription = "ExitToApp Icon",
+                                    modifier = Modifier.padding(end = 5.dp)
+                                        .clickable {
+                                        // Initialize FirebaseAuth here
+                                        val auth: FirebaseAuth = FirebaseAuth.getInstance()
+                                        auth.signOut() // Sign out the user
+                                        navController.navigate("infoScreen")
+                                    }
                                 )
                             }
                         )
