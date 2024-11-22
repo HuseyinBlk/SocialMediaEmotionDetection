@@ -13,7 +13,7 @@ import com.hope.socialmediaemotiondetection.repository.UserFollowsRepository
 import com.hope.socialmediaemotiondetection.repository.UserLikedPostRepository
 import com.hope.socialmediaemotiondetection.repository.UserRepository
 import com.hope.socialmediaemotiondetection.service.EmotionApiService
-import com.hope.socialmediaemotiondetection.utils.Constants.BASE_URL
+import com.hope.socialmediaemotiondetection.utils.Constants.BASE_URL_API
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -103,7 +103,10 @@ object AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_API)
+            /*
+            EĞER API BOZULDUYSA YEREL İLE DEĞİŞTİRİN
+            */
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
