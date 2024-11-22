@@ -129,7 +129,6 @@ fun GetUsernameScreen(
                 label = { Text("Kullanıcı Adı") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
             )
 
             OutlinedTextField(
@@ -139,9 +138,10 @@ fun GetUsernameScreen(
                 placeholder = { Text("Kendiniz hakkında birkaç cümle yazın") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(top = 1.dp, bottom = 8.dp),
                 maxLines = 3
             )
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
