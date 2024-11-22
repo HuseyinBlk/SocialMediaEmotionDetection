@@ -1,5 +1,6 @@
 package com.hope.socialmediaemotiondetection.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
@@ -102,32 +103,39 @@ class HomeViewModel @Inject constructor(
     fun addPost(content: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                Log.d("AddPost", "Analyzing emotion for content: $content")
                 val emotionResult = emotionRepository.analyzeEmotion(content)
+
                 if (emotionResult is Resource.Success) {
                     val emotion = emotionResult.data.prediction
                     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    Log.d("AddPost", "Emotion analysis succeeded: $emotion")
 
                     val postResult = postRepository.addPost(emotion, content)
-
                     if (postResult.isSuccess) {
+                        Log.d("AddPost", "Post added successfully: $content")
                         // Günlük emotion güncellemesi
                         val emotionUpdateResult = userDailyEmotionRepository.updateDailyEmotion(
                             currentDate,
                             emotion,
                             10
                         )
-                        _postResult.value = if (emotionUpdateResult.isSuccess) {
-                            Resource.Success(true)
+                        if (emotionUpdateResult.isSuccess) {
+                            _postResult.value = Resource.Success(true)
                         } else {
-                            Resource.Failure("Post oluşturuldu ancak günlük emotion güncellenemedi.")
+                            Log.e("AddPost", "Failed to update daily emotion.")
+                            _postResult.value = Resource.Failure("Post oluşturuldu ancak günlük emotion güncellenemedi.")
                         }
                     } else {
+                        Log.e("AddPost", "Failed to add post.")
                         _postResult.value = Resource.Failure("Post oluşturulamadı.")
                     }
                 } else if (emotionResult is Resource.Failure) {
+                    Log.e("AddPost", "Emotion analysis failed: ${emotionResult.message}")
                     _postResult.value = Resource.Failure("Emotion analizi başarısız: ${emotionResult.message}")
                 }
             } catch (e: Exception) {
+                Log.e("AddPost", "Exception occurred: ${e.message}")
                 _postResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
         }
