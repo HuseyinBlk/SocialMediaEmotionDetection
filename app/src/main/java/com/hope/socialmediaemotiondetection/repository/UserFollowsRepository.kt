@@ -7,7 +7,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 /*
-Takip/Takipçi işlemleri
+Takip/Takipçi etme işlemleri
  */
 
 class UserFollowsRepository @Inject constructor(

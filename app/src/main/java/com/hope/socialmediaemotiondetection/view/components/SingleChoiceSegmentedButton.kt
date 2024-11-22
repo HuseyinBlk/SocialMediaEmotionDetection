@@ -10,14 +10,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SingleChoiceSegmentedButton(){
+fun SingleChoiceSegmentedButton(onSelectionChanged: (Int) -> Unit) {
     var checkedItem by remember { mutableIntStateOf(0) }
-    val options = listOf("Paylaşımlar","Yorumlar","Beğeniler")
+    val options = listOf("Paylaşımlar", "Yorumlar","Durum")
     SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index , option ->
+        options.forEachIndexed { index, option ->
             SegmentedButton(
                 onClick = {
                     checkedItem = index
+                    onSelectionChanged(index)  // Seçim değiştiğinde dışarıya ilet
                 },
                 selected = checkedItem == index,
                 shape = SegmentedButtonDefaults.itemShape(
@@ -32,8 +33,3 @@ fun SingleChoiceSegmentedButton(){
 }
 
 
-@Composable
-@Preview
-fun ButtonPreview(){
-    SingleChoiceSegmentedButton()
-}

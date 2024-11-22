@@ -2,11 +2,13 @@ package com.hope.socialmediaemotiondetection.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hope.socialmediaemotiondetection.model.post.Post
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.model.user.comment.Comment
 import com.hope.socialmediaemotiondetection.model.user.dailyEmotion.DailyEmotion
+import com.hope.socialmediaemotiondetection.repository.AuthRepository
 import com.hope.socialmediaemotiondetection.repository.PostRepository
 import com.hope.socialmediaemotiondetection.repository.UserCommentsRepository
 import com.hope.socialmediaemotiondetection.repository.UserDailyEmotionRepository
@@ -18,6 +20,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 /*
@@ -26,6 +32,7 @@ Profile detaylarının ekranın arka planını burada toparladık
 
 @HiltViewModel
 class ProfileDetailsViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val postRepository: PostRepository,
     private val userLikedPostRepository: UserLikedPostRepository,
@@ -34,6 +41,9 @@ class ProfileDetailsViewModel @Inject constructor(
     private val userDailyEmotionRepository: UserDailyEmotionRepository
 
 ) : ViewModel(){
+
+    private val _removeCommentResult = MutableStateFlow<Resource<Boolean>>(Resource.Idle())
+    val removeCommentResult: StateFlow<Resource<Boolean>> get() = _removeCommentResult
 
     private val _userResult = MutableStateFlow<Resource<User?>>(Resource.Idle())
     val userResult: StateFlow<Resource<User?>> get() = _userResult
@@ -44,23 +54,56 @@ class ProfileDetailsViewModel @Inject constructor(
     private val _postsResult = MutableStateFlow<Resource<List<Post>>>(Resource.Idle())
     val postsResult: StateFlow<Resource<List<Post>>> get() = _postsResult
 
+    private val _postsRemoveResult = MutableStateFlow<Resource<String>>(Resource.Idle())
+    val postsRemoveResult: StateFlow<Resource<String>> get() = _postsRemoveResult
+
     private val _likedPostsResult = MutableStateFlow<Resource<List<String>>>(Resource.Idle())
     val likedPostsResult: StateFlow<Resource<List<String>>> get() = _likedPostsResult
 
     private val _userCommentsResult = MutableStateFlow<Resource<Map<String, Comment>>>(Resource.Idle())
     val userCommentsResult: StateFlow<Resource<Map<String, Comment>>> get() = _userCommentsResult
 
-    private val _followingListResult = MutableStateFlow<Resource<List<String>>>(Resource.Idle())
-    val followingListResult: StateFlow<Resource<List<String>>> get() = _followingListResult
+    private val _followingListLengthResult = MutableStateFlow<Resource<String>>(Resource.Idle())
+    val followingListLengthResult: StateFlow<Resource<String>> get() = _followingListLengthResult
 
-    private val _followersListResult = MutableStateFlow<Resource<List<String>>>(Resource.Idle())
-    val followersListResult: StateFlow<Resource<List<String>>> get() = _followersListResult
+    private val _followersListLengthResult = MutableStateFlow<Resource<String>>(Resource.Idle())
+    val followersListLengthResult: StateFlow<Resource<String>> get() =_followersListLengthResult
 
     private val _dailyEmotionState = MutableStateFlow<Resource<DailyEmotion?>>(Resource.Idle())
     val dailyEmotionState: StateFlow<Resource<DailyEmotion?>> get() = _dailyEmotionState
 
 
-    fun getUserComments(userId: String) {
+    init {
+        authRepository.currentUser()?.uid?.let {
+            getPostsByUser(it)
+            getUsernameByUserId(it)
+            getFollowersList(it)
+            getFollowingList(it)
+            getUserComments(it)
+            getDailyEmotion()
+        } ?: run {
+
+        }
+    }
+
+    fun removeComment(commentId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _removeCommentResult.value = Resource.Loading()
+
+            try {
+                val result = userCommentsRepository.removeCommentFromUser(commentId)
+                _removeCommentResult.value = if (result.isSuccess) {
+                    Resource.Success(result.getOrNull() ?: false) // true dönerse işlem başarılı
+                } else {
+                    Resource.Failure("Yorum silinemedi.")
+                }
+            } catch (e: Exception) {
+                _removeCommentResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
+            }
+        }
+    }
+
+    fun getUserComments(userId: String = authRepository.currentUser()!!.uid) {
         viewModelScope.launch(Dispatchers.IO) {
             _userCommentsResult.value = Resource.Loading()
             try {
@@ -75,6 +118,8 @@ class ProfileDetailsViewModel @Inject constructor(
             }
         }
     }
+
+
 
     fun getLikedPosts() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -92,7 +137,24 @@ class ProfileDetailsViewModel @Inject constructor(
         }
     }
 
-    fun getPostsByUser(userId: String) {
+    fun removePosts(postId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _postsRemoveResult.value = Resource.Loading() // Yükleniyor durumu
+
+            try {
+                val result = postRepository.removePost(postId)
+                _postsRemoveResult.value = if (result.isSuccess) {
+                    Resource.Success("Gönderi başarıyla silindi.")
+                } else {
+                    Resource.Failure("Gönderi silinirken bir hata oluştu: ${result.exceptionOrNull()?.message}")
+                }
+            } catch (e: Exception) {
+                _postsRemoveResult.value = Resource.Failure("Bilinmeyen bir hata oluştu: ${e.message}")
+            }
+        }
+    }
+
+    fun getPostsByUser(userId: String = authRepository.currentUser()!!.uid) {
         viewModelScope.launch(Dispatchers.IO) {
             _postsResult.value = Resource.Loading()
             try {
@@ -105,6 +167,18 @@ class ProfileDetailsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _postsResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
+        }
+    }
+
+    fun formatTimestampToDate(timestamp: Any?): String {
+        if (timestamp == null) return "Tarih bilinmiyor"
+        return try {
+            val millis = (timestamp as? Long) ?: return "Geçersiz tarih"
+            val date = java.util.Date(millis)
+            val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+            formatter.format(date)
+        } catch (e: Exception) {
+            "Tarih formatlanamadı"
         }
     }
 
@@ -124,11 +198,13 @@ class ProfileDetailsViewModel @Inject constructor(
         }
     }
 
-    fun getUsernameByUserId(userId: String) {
+    fun getUsernameByUserId(userId: String = authRepository.currentUser()!!.uid) {
         viewModelScope.launch(Dispatchers.IO) {
             _usernameResult.value = Resource.Loading()
+
             try {
                 val result = userRepository.getUsernameByUserId(userId)
+
                 _usernameResult.value = if (result.isSuccess) {
                     Resource.Success(result.getOrNull())
                 } else {
@@ -142,41 +218,46 @@ class ProfileDetailsViewModel @Inject constructor(
 
     fun getFollowingList(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _followingListResult.value = Resource.Loading()
+            _followingListLengthResult.value = Resource.Loading()
             try {
                 val result = userFollowsRepository.getFollowingList(userId)
-                _followingListResult.value = if (result.isSuccess) {
-                    Resource.Success(result.getOrNull().orEmpty())
+                _followingListLengthResult.value = if (result.isSuccess) {
+                    val followingList = result.getOrNull().orEmpty()
+                    Resource.Success(followingList.size.toString()) // Liste uzunluğunu String olarak döndürüyoruz
                 } else {
                     Resource.Failure("Takip edilenler alınamadı.")
                 }
             } catch (e: Exception) {
-                _followingListResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
+                _followingListLengthResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
         }
     }
 
+
     fun getFollowersList(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _followersListResult.value = Resource.Loading()
+            _followersListLengthResult.value = Resource.Loading()
             try {
                 val result = userFollowsRepository.getFollowersList(userId)
-                _followersListResult.value = if (result.isSuccess) {
-                    Resource.Success(result.getOrNull().orEmpty())
+                _followersListLengthResult.value = if (result.isSuccess) {
+                    val followersList = result.getOrNull().orEmpty()
+                    Resource.Success(followersList.size.toString()) // Liste uzunluğunu String olarak döndürüyoruz
                 } else {
                     Resource.Failure("Takipçiler alınamadı.")
                 }
             } catch (e: Exception) {
-                _followersListResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
+                _followersListLengthResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
         }
     }
 
-    fun getDailyEmotion(date: String) {
+    fun getDailyEmotion() {
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
         viewModelScope.launch(Dispatchers.IO) {
             _dailyEmotionState.value = Resource.Loading()
 
-            val result = userDailyEmotionRepository.getDailyEmotion(date)
+            val result = userDailyEmotionRepository.getDailyEmotion(today)
 
             _dailyEmotionState.value = if (result.isSuccess) {
                 val emotion = result.getOrNull()

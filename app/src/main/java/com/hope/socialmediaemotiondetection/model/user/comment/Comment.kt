@@ -5,6 +5,7 @@ Kullanıcının yaptığı yorumların detayları
  */
 
 data class Comment(
+    val commentId : String,
     val postId: String,
     val content: String,
     val createdAt: Any,

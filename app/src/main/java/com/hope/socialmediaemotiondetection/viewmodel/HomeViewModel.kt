@@ -312,7 +312,7 @@ class HomeViewModel @Inject constructor(
                 if (removeResult.isFailure) {
                     _postRemoveCommentResult.value = Resource.Failure("Yorum silinemedi")
                 } else {
-                    val userRemoveResult = userCommentsRepository.removeCommentFromUser(postId, commentId)
+                    val userRemoveResult = userCommentsRepository.removeCommentFromUser(commentId)
 
                     if (userRemoveResult.isFailure) {
                         postCommentRepository.addCommentToPost(postId, commentId,emotion)

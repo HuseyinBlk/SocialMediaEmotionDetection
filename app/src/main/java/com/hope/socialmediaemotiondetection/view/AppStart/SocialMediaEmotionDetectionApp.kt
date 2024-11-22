@@ -109,7 +109,7 @@ fun SocialMediaEmotionDetectionApp() {
                 composable("userDetailsScreen") { GetUsernameScreen(navController = navController) }
                 composable("mainScreen") { MainScreen() }
                 composable("searchScreen") { SearchScreen() }
-                composable("userProfileScreen"){ UserProfileScreen(User("31","Hüseyin","huseyinsbalik@gmail.com",null,"Kun fe yekün\nBabasının prensesi \nSevgilisinin hamı \nAnasının canı..\nSümeyye’nin kankası\nTarz değil farz",emptyList())) }
+                composable("userProfileScreen"){ UserProfileScreen() }
             }
         }
     }

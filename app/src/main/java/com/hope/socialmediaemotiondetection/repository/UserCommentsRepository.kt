@@ -1,5 +1,6 @@
 package com.hope.socialmediaemotiondetection.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,6 +22,7 @@ class UserCommentsRepository @Inject constructor(
         val commentId = firestore.collection("users").document(currentUser.uid)
             .collection("comments").document().id
         val comment = Comment(
+            commentId,
             postId,
             content,
             FieldValue.serverTimestamp(),
@@ -36,13 +38,16 @@ class UserCommentsRepository @Inject constructor(
         }
     }
 
-    suspend fun removeCommentFromUser(postId: String, commentId: String): Result<Boolean> {
+    suspend fun removeCommentFromUser(commentId: String): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
 
         return try {
-            // Kullanıcının comments koleksiyonundaki ilgili yorumu sil
-            firestore.collection("users").document(currentUser.uid)
-                .collection("comments").document(commentId).delete().await()
+            firestore.collection("users")
+                .document(currentUser.uid)
+                .collection("comments")
+                .document(commentId)
+                .delete()
+                .await()
 
             Result.success(true)
         } catch (e: Exception) {
@@ -58,6 +63,7 @@ class UserCommentsRepository @Inject constructor(
             // Yorumları id ile birliktedöndür
             val commentsMap = commentsSnapshot.documents.associate { doc ->
                 val comment = Comment(
+                    commentId =  doc.getString("commentId") ?: "",
                     postId = doc.getString("postId") ?: "",
                     content = doc.getString("content") ?: "",
                     createdAt = doc.get("createdAt") ?: "",
