@@ -1,5 +1,8 @@
 package com.hope.socialmediaemotiondetection.view.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,8 +23,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryVioletDark
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun ActionButton(
@@ -37,18 +48,18 @@ fun ActionButton(
     isNavigationArrowVisible: Boolean,
     onClicked : () ->Unit,
     colors: ButtonColors,
-    shadowColor: Color
 ) {
     Button(
         modifier= modifier
             .fillMaxWidth()
             .height(62.dp)
             .shadow(
-                elevation = 24.dp,
-                shape = RoundedCornerShape(percent = 50),
-                spotColor = shadowColor
+                elevation = 12.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color(0x66000000),
+                ambientColor = Color(0x22000000),
             ),
-        onClick = onClicked,
+        onClick = { onClicked()},
         colors = colors,
 
 
@@ -65,46 +76,6 @@ fun ActionButton(
             Icon(imageVector = (Icons.Filled.KeyboardArrowRight),
                 contentDescription = null ,
                 modifier = Modifier.size(26.dp))
-        }
-    }
-}
-@Preview
-@Composable
-fun previewActionButton_NavigationVisible(){
-    SocialMediaEmotionDetectionTheme {
-        ActionButton(
-            text ="Action Text" ,
-            isNavigationArrowVisible = true,
-            onClicked = { },
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.White,
-                containerColor = PrimaryVioletDark
-            ),
-            shadowColor = PrimaryVioletDark
-        )
-    }
-}
-
-@Preview
-@Composable
-fun previewActionButton_Navigation(){
-    SocialMediaEmotionDetectionTheme {
-        Surface (modifier = Modifier
-            .background(color = Color.White)
-
-        ){
-            Column (Modifier.padding(5.dp)){
-                ActionButton(
-                    text ="Action Text" ,
-                    isNavigationArrowVisible = false,
-                    onClicked = { },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
-                        containerColor = PrimaryVioletDark
-                    ),
-                    shadowColor = PrimaryVioletDark
-                )
-            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.hope.socialmediaemotiondetection.view.Info
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +32,7 @@ import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryVioletDark
+import com.hope.socialmediaemotiondetection.view.ui.theme.getGradientBrush
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
@@ -41,23 +45,20 @@ fun InfoScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(
-                0f to renk1,
-                0.25f to renk2,
-                0.5f to renk3,
-                0.75f to renk4
-            )),
+            .background(brush = getGradientBrush(isDarkTheme = isSystemInDarkTheme())),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ){
         Image(painter = painterResource(R.drawable.deeplearning),
-            contentDescription = null, //görme engelli kullanıcıların içeriği anlaması için metin
+            contentDescription = null,
             modifier = Modifier
                 .size(400.dp)
                 .padding(top = 32.dp)
-                .padding(horizontal = 20.dp)
-
-
+                .alpha(0.6f)
+                .padding(horizontal = 20.dp),
+            colorFilter = ColorFilter.tint(
+                color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground
+            )
         )
         Spacer(modifier = Modifier
             .height(16.dp))
@@ -66,7 +67,7 @@ fun InfoScreen(
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 12.dp),
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier
             .height(16.dp))
@@ -74,7 +75,7 @@ fun InfoScreen(
             textAlign = TextAlign.Center,
             fontSize =21.sp,
             modifier = Modifier.padding(horizontal = 24.dp),
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(150.dp))
         Row (
@@ -87,26 +88,27 @@ fun InfoScreen(
                 isNavigationArrowVisible = true,
                 onClicked = {navController.navigate("loginScreen")},
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = renk3
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
-                shadowColor = PrimaryVioletDark,
                 modifier = Modifier
                     .weight(1f)
+                    .alpha(0.9f)
                     .padding(8.dp)
 
             )
             ActionButton(
                 text ="Sign In" ,
                 isNavigationArrowVisible = true,
-                onClicked = {navController.navigate("registerScreen") },
+                onClicked = {
+                    navController.navigate("registerScreen") },
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = renk3
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
-                shadowColor = PrimaryVioletDark,
                 modifier = Modifier
                     .weight(1f)
+                    .alpha(0.9f)
                     .padding(8.dp)
 
             )

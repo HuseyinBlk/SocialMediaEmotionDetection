@@ -75,6 +75,7 @@ fun PostItem(
 
 ) {
     val postCommentResult by viewModel.getAllCommentUserName.collectAsState()
+    val postAddCommentResult by viewModel.postAddCommentResult.collectAsState()
     var allCommentUser by remember { mutableStateOf<List<CommentWithUsername>>(listOf()) }
     var likeCount by remember { mutableIntStateOf(post.likesCount) }
     var isLiked by remember { mutableStateOf(initialLiked) }
@@ -85,6 +86,10 @@ fun PostItem(
 
     LaunchedEffect(initialLiked) {
         isLiked = initialLiked
+    }
+
+    LaunchedEffect(postAddCommentResult) {
+        viewModel.fetchCommentsWithUsernames(postId = post.postId)
     }
 
     Column(
@@ -102,6 +107,7 @@ fun PostItem(
             Column {
                 Text(
                     text = username,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold
                 )

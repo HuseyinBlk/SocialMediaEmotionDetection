@@ -63,7 +63,8 @@ fun MainScreen(
         when (postResult) {
             is Resource.Success -> {
                 Toast.makeText(context, "Gönderi başarıyla eklendi!", Toast.LENGTH_SHORT).show()
-                homeViewModel.resetPostResult()
+                homeViewModel.resetPostResult().apply {
+                    homeViewModel.getFollowingAllPost()  }
             }
             is Resource.Failure -> {
                 Toast.makeText(
@@ -81,12 +82,14 @@ fun MainScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(25.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(shape = CircleShape)
+                .background(MaterialTheme.colorScheme.tertiaryContainer)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -122,7 +125,6 @@ fun MainScreen(
             }
         }
 
-        HorizontalDivider()
 
         LazyColumn {
             when (gelAllPostShorted) {

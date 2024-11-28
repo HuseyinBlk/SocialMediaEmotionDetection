@@ -43,7 +43,6 @@ import com.hope.socialmediaemotiondetection.view.components.SingleChoiceSegmente
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 import com.hope.socialmediaemotiondetection.viewmodel.ProfileDetailsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -66,7 +65,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Row(
             modifier = Modifier
@@ -122,7 +121,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Takipçi",
+                            text = "Takip",
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -144,7 +143,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Takip",
+                            text = "Takipçi",
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -196,17 +195,16 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                             .fillMaxWidth(),
                                         shape = MaterialTheme.shapes.medium,
                                         elevation = CardDefaults.cardElevation(4.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                                     ) {
                                         Column(
                                             modifier = Modifier
                                                 .padding(16.dp)
                                         ) {
-                                            // Gönderi İçeriği
                                             Text(
                                                 text = post.content,
                                                 style = MaterialTheme.typography.bodyLarge,
-                                                color = Color.Black,
+                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                                 modifier = Modifier.padding(bottom = 8.dp)
                                             )
 
@@ -220,19 +218,23 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                 Text(
                                                     text = "Duygu: ",
                                                     style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                                 )
                                                 Badge(
                                                     containerColor = when (post.emotion) {
-                                                        "Happy" -> Color(0xFF81C784) // Yeşil
-                                                        "Sad" -> Color(0xFFE57373) // Kırmızı
+                                                        "happy" -> Color(0xFF81C784) // Yeşil
+                                                        "sad" -> Color(0xFFE57373) // Kırmızı
+                                                        "angry" -> Color(0xFFD32F2F) // Kızıl
+                                                        "love" -> Color(0xFFFF4081) // Pembe
+                                                        "fear" -> Color(0xFF9E9E9E) // Gri
+                                                        "surprise" -> Color(0xFF64B5F6) // Mavi
                                                         else -> Color(0xFF64B5F6)  // Mavi
                                                     }
                                                 ) {
                                                     Text(
                                                         text = post.emotion,
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = Color.White
+                                                        color = MaterialTheme.colorScheme.onSecondaryContainer
                                                     )
                                                 }
                                             }
@@ -247,17 +249,17 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                 Text(
                                                     text = "Beğeni: ${post.likesCount}",
                                                     style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                                 )
                                                 Text(
                                                     text = "Yorum: ${post.commentsCount}",
                                                     style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                                 )
                                                 Text(
                                                     text = "Tarih: ${viewModel.formatTimestampToDate(post.createdAt)}",
                                                     style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                                 )
 
                                                 // Silme İkonu
@@ -313,7 +315,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                             .fillMaxWidth(),
                                         shape = MaterialTheme.shapes.medium,
                                         elevation = CardDefaults.cardElevation(4.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                                     ) {
                                         Row(
                                             modifier = Modifier
@@ -328,7 +330,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                 Text(
                                                     text = comment.content,
                                                     style = MaterialTheme.typography.bodyLarge,
-                                                    color = Color.Black,
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                                                     modifier = Modifier.padding(bottom = 8.dp)
                                                 )
 
@@ -337,7 +339,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                 Text(
                                                     text = "Yorum yapılan gönderinin duygu durumu: ${comment.emotion}",
                                                     style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                                 )
                                             }
                                             IconButton(
@@ -381,7 +383,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator(
-                                        color = Color(0xFF64B5F6),
+                                        color = MaterialTheme.colorScheme.secondaryContainer,
                                         modifier = Modifier.size(40.dp)
                                     )
                                 }
@@ -401,7 +403,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                             .fillMaxWidth(),
                                         shape = MaterialTheme.shapes.large,
                                         elevation = CardDefaults.cardElevation(12.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                                     ) {
                                         Column(
                                             modifier = Modifier
@@ -412,7 +414,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                             Text(
                                                 text = "Bugünkü Duygu Durumunuz",
                                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                                color = Color.Black,
+                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                                 modifier = Modifier.padding(bottom = 12.dp)
                                             )
 
@@ -434,7 +436,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                     Text(
                                                         text = it.capitalize(),
                                                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                                        color = Color.White
+                                                        color = MaterialTheme.colorScheme.onSecondaryContainer
                                                     )
                                                 }
                                             }
@@ -452,13 +454,13 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                     Text(
                                                         text = emotion.capitalize(),
                                                         style = MaterialTheme.typography.bodyLarge,
-                                                        color = Color.Black
+                                                        color = MaterialTheme.colorScheme.onSecondaryContainer
                                                     )
 
                                                     Text(
                                                         text = "$count",
                                                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                                        color = Color.Gray
+                                                        color = MaterialTheme.colorScheme.onSecondaryContainer
                                                     )
                                                 }
                                             }

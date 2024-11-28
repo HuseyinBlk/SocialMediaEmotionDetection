@@ -10,6 +10,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -77,20 +79,15 @@ fun LoginScreen(
 ){
     var animation by remember { mutableStateOf(true) }
     val scaleAnim by animateFloatAsState(
-        targetValue = if (animation) 0.3f else 1f,
-        animationSpec = tween(durationMillis = 500, easing = EaseOutCirc), label = "LoginAnimate"
+        targetValue = if (animation) 0.5f else 1f,
+        animationSpec = tween(durationMillis = 400, easing = EaseOutCirc), label = "LoginAnimate"
     )
 
     Column (
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    0f to renk1,
-                    0.20f to renk2,
-                    0.4f to renk3,
-                    0.8f to renk4,
-                    )
+                color = MaterialTheme.colorScheme.background
             ).graphicsLayer(scaleAnim),
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -138,13 +135,16 @@ fun LoginScreen(
             contentDescription =null,
             modifier = Modifier
                 .padding(top = 100.dp)
-                .size(100.dp)
+                .size(100.dp),
+            colorFilter = ColorFilter.tint(
+                color = MaterialTheme.colorScheme.onBackground
+            )
         )
         Spacer(modifier = Modifier.height(32.dp))
         Message(
             title = "Welcome Back !",
             subtitle = "Please Login.",
-            textColor = Color.White,
+            textColor = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(70.dp))
@@ -175,10 +175,9 @@ fun LoginScreen(
                 viewModel.login(inputTextEmail, inputTextPassword)
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = renk2,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            shadowColor = renk5,
             modifier = Modifier.padding(horizontal = 50.dp)
         )
         Spacer(modifier = Modifier.height(15.dp))
@@ -186,13 +185,13 @@ fun LoginScreen(
 
         ClickableText(
             text = AnnotatedString("Hesabın yoksa tıklayarak Kayıt Ol!"),
-            onClick = { offset ->
+            onClick = {
                 navController.navigate("registerScreen"){
                     popUpTo("loginScreen") { inclusive = true }
                 }
             },
             style = TextStyle(
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
 
@@ -202,8 +201,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(50.dp))
         Text(text = "Diğer giriş seçenekleri",
             style = TextStyle(
-                color = Color.White,
-
+                color = MaterialTheme.colorScheme.onBackground
             )
         )
         Row{
@@ -242,13 +240,13 @@ private fun InputField(
             disabledIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,
-            focusedTextColor = DarkTextColor,
-            unfocusedTextColor = DarkTextColor,
-            focusedPlaceholderColor = DarkTextColor,
-            unfocusedPlaceholderColor = DarkTextColor,
-            focusedLeadingIconColor = DarkTextColor,
-            unfocusedLeadingIconColor = DarkTextColor,
-            focusedContainerColor = Color.White,
+            focusedTextColor = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.9f),
+            unfocusedTextColor = Color.Black,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedLeadingIconColor = Color.White,
+            unfocusedLeadingIconColor = Color.Black,
+            focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             unfocusedContainerColor = Color.White
         ),
         textStyle = MaterialTheme.typography.bodyLarge.copy(

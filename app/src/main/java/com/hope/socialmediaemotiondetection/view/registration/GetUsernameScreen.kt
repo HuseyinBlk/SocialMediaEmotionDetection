@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +37,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.model.result.Resource
@@ -98,12 +104,7 @@ fun GetUsernameScreen(
     Box(
         modifier = Modifier
             .background(
-                brush = Brush.verticalGradient(
-                    0f to renk1,
-                    0.20f to renk2,
-                    0.4f to renk3,
-                    0.8f to renk4,
-                )
+                color = MaterialTheme.colorScheme.background
             ).graphicsLayer(scaleAnim)
             .fillMaxSize()
             .padding(16.dp),
@@ -111,15 +112,15 @@ fun GetUsernameScreen(
     ) {
         Column(
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(11))
+                .background(MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(11))
                 .padding(16.dp)
                 .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.4f) // Boyut artırıldı, çünkü yeni bir alan eklendi
+                .fillMaxHeight(0.5f)
         ) {
             Message(
                 title = "Çok Az Kaldı!",
                 subtitle = "Lütfen kullanıcı ad, biyografi ve ilgi alanlarınızı giriniz.",
-                textColor = Color.Black,
+                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Normal
             )
 
@@ -135,49 +136,76 @@ fun GetUsernameScreen(
                 value = bio,
                 onValueChange = { bio = it },
                 label = { Text("Biyografi") },
+                minLines = 2,
                 placeholder = { Text("Kendiniz hakkında birkaç cümle yazın") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 1.dp, bottom = 8.dp),
-                maxLines = 3
+                maxLines = 2
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .wrapContentHeight()
                     .border(1.dp, Color.Gray)
                     .clickable { expanded = true }
-                    .padding(16.dp)
+                    .padding(30.dp)
             ) {
                 Text(
                     text = if (selectedInterests.filterValues { it }.isEmpty())
                         "İlgili alanları seçiniz"
                     else
-                        selectedInterests.filterValues { it }.keys.joinToString()
+                        selectedInterests.filterValues { it }.keys.joinToString(),
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+            }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    interests.forEach { interest ->
-                        DropdownMenuItem(
-                            onClick = {
-                                selectedInterests[interest] = !(selectedInterests[interest] ?: false)
-                            },
-                            text = {
-                                Row {
-                                    Checkbox(
-                                        checked = selectedInterests[interest] ?: false,
-                                        onCheckedChange = {
-                                            selectedInterests[interest] = it
-                                        }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                properties = PopupProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
+                    focusable = true,
+                    clippingEnabled = false
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(MaterialTheme.colorScheme.secondary)
+            ) {
+                interests.forEach { interest ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedInterests[interest] = !(selectedInterests[interest] ?: false)
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Checkbox(
+                                    checked = selectedInterests[interest] ?: false,
+                                    onCheckedChange = null,
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = MaterialTheme.colorScheme.secondary,
+                                        uncheckedColor = Color.Transparent,
+                                        checkmarkColor = MaterialTheme.colorScheme.onSecondary
                                     )
-                                    Text(text = interest, modifier = Modifier.padding(start = 8.dp))
-                                }
+                                )
+                                Text(
+                                    text = interest,
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
@@ -191,10 +219,9 @@ fun GetUsernameScreen(
                 viewModel.registerUserDetails(username,"",bio,selectedInterestsList)
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = renk2
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            shadowColor = renk2,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 80.dp, vertical = 16.dp) // Butonun hizalaması ve padding

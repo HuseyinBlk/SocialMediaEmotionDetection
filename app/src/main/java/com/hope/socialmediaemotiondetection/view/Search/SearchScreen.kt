@@ -52,6 +52,7 @@ fun SearchScreen(
 
     Column(
         modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(Modifier.height(20.dp))
         Box(
@@ -68,7 +69,8 @@ fun SearchScreen(
                 placeholder = {
                     Text(
                         text = "Aramak İstediğiniz Kullanıcıyı Giriniz.",
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
+                        style = MaterialTheme.typography.bodyMedium.copy
+                            (color = MaterialTheme.colorScheme.onBackground)
                     )
                 },
                 singleLine = true,
@@ -77,7 +79,7 @@ fun SearchScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search Icon",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .padding(end = 20.dp)
                             .clickable {}
@@ -86,10 +88,10 @@ fun SearchScreen(
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = DarkTextColor,
-                    unfocusedTextColor = DarkTextColor,
-                    focusedPlaceholderColor = DarkTextColor,
-                    unfocusedPlaceholderColor = DarkTextColor,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 )

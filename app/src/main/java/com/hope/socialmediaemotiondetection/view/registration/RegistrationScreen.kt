@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,7 @@ import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
+import com.hope.socialmediaemotiondetection.view.components.Message
 import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
 import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
@@ -63,20 +65,14 @@ fun RegistrationScreen(
     ){
     var animation by remember { mutableStateOf(true) }
     val scaleAnim by animateFloatAsState(
-        targetValue = if (animation) 0.3f else 1f,
-        animationSpec = tween(durationMillis = 500, easing = EaseOutCirc), label = "LoginAnimate"
+        targetValue = if (animation) 0.5f else 1f,
+        animationSpec = tween(durationMillis = 400, easing = EaseOutCirc), label = "LoginAnimate"
     )
     Column (
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    0f to renk1,
-                    0.20f to renk2,
-                    0.4f to renk3,
-                    0.8f to renk4,
-
-                    )
+                color = MaterialTheme.colorScheme.background
             ).graphicsLayer(scaleAnim),
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -128,7 +124,9 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(20.dp))
         Message(
             title = "Welcome Aboard !",
-            subtitle = "Don't let anything upset you."
+            subtitle = "Don't let anything upset you.",
+            textColor = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(40.dp))
 
@@ -136,7 +134,7 @@ fun RegistrationScreen(
             leadingIconRes = R.drawable.baseline_alternate_email_24,
             placeholderText = "email",
             modifier = Modifier.padding(horizontal = 30.dp),
-            onInputValueChange = { inputTextEmail = it },
+            onInputTextChange = { inputTextEmail = it },
             inputValue = inputTextEmail
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -146,7 +144,7 @@ fun RegistrationScreen(
             placeholderText = "password",
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.padding(horizontal = 30.dp),
-            onInputValueChange = { inputTextPassword = it },
+            onInputTextChange = { inputTextPassword = it },
             inputValue = inputTextPassword
         )
         Spacer(modifier.height(30.dp))
@@ -158,10 +156,9 @@ fun RegistrationScreen(
                 viewModel.register(inputTextEmail, inputTextPassword)
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = renk2,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            shadowColor = renk5,
             modifier = Modifier.padding(horizontal = 50.dp)
         )
 
@@ -169,49 +166,22 @@ fun RegistrationScreen(
 }
 
 @Composable
-private fun Message(
-    modifier: Modifier=Modifier,
-    title: String,
-    subtitle : String
-){
-    Column (
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ){
-        Text(
-            text = title,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            text = subtitle,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
-            fontWeight = FontWeight.Black
-        )
-    }
-}
-@Composable
 private fun InputField(
     modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     @DrawableRes leadingIconRes: Int,
     placeholderText: String,
-    inputValue: String,
-    onInputValueChange: (String) -> Unit
-) {
+    inputValue : String,
+    onInputTextChange : (String) -> Unit,
+){
+
     TextField(
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp)
             .padding(start = 15.dp, end = 15.dp),
         value = inputValue,
-        onValueChange = onInputValueChange,
+        onValueChange =onInputTextChange,
         visualTransformation = visualTransformation,
         singleLine = true,
         shape = RoundedCornerShape(10),
@@ -220,13 +190,13 @@ private fun InputField(
             disabledIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,
-            focusedTextColor = DarkTextColor,
-            unfocusedTextColor = DarkTextColor,
-            focusedPlaceholderColor = DarkTextColor,
-            unfocusedPlaceholderColor = DarkTextColor,
-            focusedLeadingIconColor = DarkTextColor,
-            unfocusedLeadingIconColor = DarkTextColor,
-            focusedContainerColor = Color.White,
+            focusedTextColor = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.9f),
+            unfocusedTextColor = Color.Black,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedLeadingIconColor = Color.White,
+            unfocusedLeadingIconColor = Color.Black,
+            focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             unfocusedContainerColor = Color.White
         ),
         textStyle = MaterialTheme.typography.bodyLarge.copy(

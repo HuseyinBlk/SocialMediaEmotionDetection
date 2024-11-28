@@ -1,5 +1,15 @@
 package com.hope.socialmediaemotiondetection.view.AppStart
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,6 +25,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -25,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -51,6 +63,20 @@ fun SocialMediaEmotionDetectionApp() {
     val navController = rememberNavController()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
+    val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        slideInHorizontally(
+            initialOffsetX = { 1000 },
+            animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
+        ) + fadeIn(animationSpec = tween(durationMillis = 500))
+    }
+
+    val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        slideOutHorizontally(
+            targetOffsetX = { -1000 },
+            animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
+        ) + fadeOut(animationSpec = tween(durationMillis = 500))
+    }
+
     SocialMediaEmotionDetectionTheme {
         Scaffold(
             topBar = {
@@ -61,21 +87,21 @@ fun SocialMediaEmotionDetectionApp() {
                             title = {},
                             modifier = Modifier.fillMaxHeight(0.08f),
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.background
                             ),
                             actions = {
-                                // Özel butonlar eklenebilir
                                 Icon(
                                     imageVector = Icons.Default.Settings,
                                     contentDescription = "Settings Icon",
-                                    modifier = Modifier.padding(end = 5.dp)
+                                    modifier = Modifier.padding(end = 5.dp),
+                                    tint = MaterialTheme.colorScheme.onBackground
                                 )
                                 Icon(
                                     imageVector = Icons.Default.ExitToApp,
                                     contentDescription = "ExitToApp Icon",
+                                    tint = MaterialTheme.colorScheme.onBackground,
                                     modifier = Modifier.padding(end = 5.dp)
                                         .clickable {
-                                        // Initialize FirebaseAuth here
                                         val auth: FirebaseAuth = FirebaseAuth.getInstance()
                                         auth.signOut() // Sign out the user
                                         navController.navigate("infoScreen")
@@ -118,14 +144,38 @@ fun SocialMediaEmotionDetectionApp() {
                 startDestination = "checkUserNameScreen",
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable("checkUserNameScreen") { CheckUserNameScreen(navController = navController) }
-                composable("infoScreen") { InfoScreen(navController = navController) }
-                composable("logInScreen") { LoginScreen(navController = navController) }
-                composable("registerScreen") { RegistrationScreen(navController = navController) }
-                composable("userDetailsScreen") { GetUsernameScreen(navController = navController) }
-                composable("mainScreen") { MainScreen() }
-                composable("searchScreen") { SearchScreen() }
-                composable("userProfileScreen"){ UserProfileScreen() }
+                composable("checkUserNameScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { CheckUserNameScreen(navController = navController) }
+                composable("infoScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { InfoScreen(navController = navController) }
+                composable("logInScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { LoginScreen(navController = navController) }
+                composable("registerScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { RegistrationScreen(navController = navController) }
+                composable("userDetailsScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { GetUsernameScreen(navController = navController) }
+                composable("mainScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { MainScreen() }
+                composable("searchScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ) { SearchScreen() }
+                composable("userProfileScreen",
+                    enterTransition = enterTransition,
+                    exitTransition = exitTransition
+                ){ UserProfileScreen() }
             }
         }
     }

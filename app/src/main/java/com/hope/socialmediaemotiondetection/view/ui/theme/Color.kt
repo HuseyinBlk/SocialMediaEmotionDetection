@@ -2,30 +2,41 @@ package com.hope.socialmediaemotiondetection.view.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val Blue80 = Color(0xFFBBDEFB)
+val BlueGrey80 = Color(0xFFB0BEC5)
+val LightCyan80 = Color(0xFFE0F7FA)
+val SkyBlue80 = Color(0xFFB3E5FC)
+val AquaBlue80 = Color(0xFF80DEEA)
+val Blue80Container = Color(0xFF90CAF9)
+val BlueGrey80Container = Color(0xFF78909C)
+val AquaBlue80Container = Color(0xFF4DD0E1)
+val SkyBlue80Container = Color(0xFF81D4FA)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Blue40 = Color(0xFF0D47A1)
+val BlueGrey40 = Color(0xFF37474F)
+val LightCyan40 = Color(0xFF00838F)
+val SkyBlue40 = Color(0xFF01579B)
+val AquaBlue40 = Color(0xFF006064)
+val Blue40Container = Color(0xFF5472D3)
+val BlueGrey40Container = Color(0xFF62727B)
+val AquaBlue40Container = Color(0xFF00838F)
+val SkyBlue40Container = Color(0xFF0288D1)
 
+val DarkBrushColors = listOf(
+    Color(0xFF37474F), // Mavi-gri (daha açık ton)
+    Color(0xFF455A64), // Hafif açık gri-mavi
+    Color(0xFF546E7A), // Orta ton gri-mavi
+    Color(0xFF263238)  // Koyu gri-mavi
+)
 
-val PrimaryYellowLight = Color(0xFFffeed4)
-val PrimaryYellow = Color(0xFFFFE7BA)
-val PrimaryYellowDark = Color(0xFFe9c16c)
+val LightBrushColors = listOf(
+    Color(0xFFE3F2FD), // Açık mavi
+    Color(0xFFBBDEFB), // Hafif daha yoğun mavi
+    Color(0xFF90CAF9), // Gökyüzü mavisi
+    Color(0xFF64B5F6)  // Daha parlak bir mavi
+)
 
-val PrimaryPinkBlended = Color(0xFFe4b1cb)
-val PrimaryPinkLight = Color( 0xFFd6a0df)
-val PrimaryPink = Color(0xFFc073cd)
-val PrimaryPinkDark = Color(0xFF78258b)
-
-val PrimaryVioletLight = Color(0xFFb0a7e2)
-val PrimaryViolet = Color(0xFF9e91e2)
 val PrimaryVioletDark = Color(0xFF52439a)
-
-val PrimaryGreen = Color(0xFF00c29f)
-val PrimaryGreenDark = Color(0xFF008b6c)
 
 val DarkTextColor = Color(0xFF132b4c)
 

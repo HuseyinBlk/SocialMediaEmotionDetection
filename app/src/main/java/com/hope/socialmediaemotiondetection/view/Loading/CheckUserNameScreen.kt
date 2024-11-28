@@ -8,10 +8,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -93,8 +95,8 @@ fun CheckUserNameScreen(navController : NavController) {
         )
 
         val backgroundColor by infiniteTransition.animateColor(
-            initialValue = Color(0xFF6200EE),
-            targetValue = Color(0xFF03DAC5),
+            initialValue = MaterialTheme.colorScheme.primary,
+            targetValue = MaterialTheme.colorScheme.tertiary,
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 4000, easing = EaseInOutQuad),
                 repeatMode = RepeatMode.Restart
@@ -103,25 +105,25 @@ fun CheckUserNameScreen(navController : NavController) {
         )
 
         val backgroundBrush = Brush.linearGradient(
-            colors = listOf(backgroundColor, MaterialTheme.colorScheme.primary)
+            colors = listOf(backgroundColor, MaterialTheme.colorScheme.background)
         )
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = backgroundBrush) // Fırça arka planı
+                .background(brush = backgroundBrush)
                 .padding(32.dp)
-                .graphicsLayer(alpha = opacity),
+                .graphicsLayer(alpha = 1f),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Loading",
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(48.dp)
                     .rotate(rotation)
                     .scale(scale),
-                tint = MaterialTheme.colorScheme.onPrimary // Icon rengini sabit tutuyoruz
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
     }

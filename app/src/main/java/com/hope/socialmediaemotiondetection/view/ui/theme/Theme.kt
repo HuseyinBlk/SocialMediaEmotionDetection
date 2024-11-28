@@ -9,28 +9,68 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Blue40,
+    onPrimary = Color.White,
+    primaryContainer = Blue40Container,
+    onPrimaryContainer = Color.Black,
+
+    secondary = BlueGrey40,
+    onSecondary = Color.White,
+    secondaryContainer = BlueGrey40Container,
+    onSecondaryContainer = Color.Black,
+
+    tertiary = AquaBlue40,
+    onTertiary = Color.White,
+    tertiaryContainer = AquaBlue40Container,
+    onTertiaryContainer = Color.Black,
+
+    background = BlueGrey40,
+    onBackground = Color.White,
+    surface = SkyBlue40,
+    onSurface = Color.White
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+fun getGradientBrush(isDarkTheme: Boolean): Brush {
+    return if (isDarkTheme) {
+        Brush.verticalGradient(
+            colors = DarkBrushColors,
+            startY = 0f,
+            endY = 1000f
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = LightBrushColors,
+            startY = 0f,
+            endY = 1000f
+        )
+    }
+}
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val LightColorScheme = lightColorScheme(
+    primary = Blue80,
+    onPrimary = Color.Black,
+    primaryContainer = Blue80Container,
+    onPrimaryContainer = Color.White,
+
+    secondary = BlueGrey80,
+    onSecondary = Color.Black,
+    secondaryContainer = BlueGrey80Container,
+    onSecondaryContainer = Color.White,
+
+    tertiary = AquaBlue80,
+    onTertiary = Color.Black,
+    tertiaryContainer = AquaBlue80Container,
+    onTertiaryContainer = Color.White,
+
+    background = LightCyan80,
+    onBackground = Color.Black,
+    surface = SkyBlue80,
+    onSurface = Color.Black
 )
 
 @Composable
