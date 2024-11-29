@@ -92,7 +92,9 @@ class PostCommentRepository @Inject constructor(
         }
     }
     /*
-    Yorum silmeye yarar
+    `removeCommentFromPost`Fonksiyonu Çalışmıyor
+    `removeCommentFromPost`
+    `removeComment` fonksiyonunu kullanarak bir yorumu silmeye çalışıyorum ancak başarıya ulaşamıyorum
      */
     suspend fun removeCommentFromPost(postId: String, commentId: String): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))

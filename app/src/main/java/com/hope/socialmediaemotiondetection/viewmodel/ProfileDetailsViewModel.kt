@@ -94,9 +94,7 @@ class ProfileDetailsViewModel @Inject constructor(
                 val result = userCommentsRepository.getUserComments(authRepository.currentUser()!!.uid)
                 if (result.isSuccess) {
                     result.map { comments ->
-                        var isDeleted = false // Yorumun silindiğini takip et
-
-                        // Her bir yorum üzerinde dön
+                        var isDeleted = false
                         for ((_, comment) in comments) {
                             if (comment.commentId == commentId) {
                                 println(comment.postId)
@@ -104,14 +102,12 @@ class ProfileDetailsViewModel @Inject constructor(
                                 if (endResult.isSuccess) {
                                     println("Yorum başarıyla silindi: $commentId")
                                     isDeleted = true
-                                    break // Yorum bulundu ve silindi, döngüyü sonlandır
+                                    break
                                 } else {
                                     println("Yorum silinemedi: $commentId")
                                 }
                             }
                         }
-
-                        // Yorum silindi mi diye kontrol et ve sonucu güncelle
                         if (isDeleted) {
                             _removeCommentResult.value = Resource.Success(true)
                         } else {
