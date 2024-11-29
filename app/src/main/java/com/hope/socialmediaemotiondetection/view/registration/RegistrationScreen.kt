@@ -49,12 +49,6 @@ import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
 import com.hope.socialmediaemotiondetection.view.components.Message
-import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk5
 import com.hope.socialmediaemotiondetection.viewmodel.LoginAndRegisterViewModel
 
 @Composable

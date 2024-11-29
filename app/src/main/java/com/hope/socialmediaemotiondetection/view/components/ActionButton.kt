@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryVioletDark
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 import kotlinx.coroutines.delay
 

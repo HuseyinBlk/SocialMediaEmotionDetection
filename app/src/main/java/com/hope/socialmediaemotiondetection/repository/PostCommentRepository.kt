@@ -96,30 +96,29 @@ class PostCommentRepository @Inject constructor(
      */
     suspend fun removeCommentFromPost(postId: String, commentId: String): Result<Boolean> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
-
         return try {
-            firestore.runTransaction { transaction ->
-                val commentRef = firestore.collection("posts")
-                    .document(postId)
-                    .collection("comments")
-                    .document(commentId)
+            val batch = firestore.batch()
+            val commentRef = firestore.collection("posts")
+                .document(postId)
+                .collection("comments")
+                .document(commentId)
+            batch.delete(commentRef)
 
-                transaction.delete(commentRef)
+            val postRef = firestore.collection("posts").document(postId)
+            batch.update(postRef, "commentsCount", FieldValue.increment(-1))
 
-                val postRef = firestore.collection("posts").document(postId)
-                transaction.update(postRef, "commentsCount", FieldValue.increment(-1))
+            val userCommentRef = firestore.collection("users").document(currentUser.uid)
+                .collection("comments").document(commentId)
+            batch.delete(userCommentRef)
 
-                val userCommentRef = firestore.collection("users").document(currentUser.uid)
-                    .collection("comments").document(commentId)
+            batch.commit().await()
 
-                transaction.delete(userCommentRef)
-
-                return@runTransaction true
-            }.await()
+            println("Batch işlemi başarıyla tamamlandı")
 
             Result.success(true)
 
         } catch (e: Exception) {
+            println("Hata oluştu: ${e.message}")
             Result.failure(e)
         }
     }

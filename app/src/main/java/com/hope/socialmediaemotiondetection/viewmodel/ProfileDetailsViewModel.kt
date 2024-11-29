@@ -9,6 +9,7 @@ import com.hope.socialmediaemotiondetection.model.user.User
 import com.hope.socialmediaemotiondetection.model.user.comment.Comment
 import com.hope.socialmediaemotiondetection.model.user.dailyEmotion.DailyEmotion
 import com.hope.socialmediaemotiondetection.repository.AuthRepository
+import com.hope.socialmediaemotiondetection.repository.PostCommentRepository
 import com.hope.socialmediaemotiondetection.repository.PostRepository
 import com.hope.socialmediaemotiondetection.repository.UserCommentsRepository
 import com.hope.socialmediaemotiondetection.repository.UserDailyEmotionRepository
@@ -38,6 +39,7 @@ class ProfileDetailsViewModel @Inject constructor(
     private val userLikedPostRepository: UserLikedPostRepository,
     private val userCommentsRepository: UserCommentsRepository,
     private val userFollowsRepository: UserFollowsRepository,
+    private val postCommentRepository: PostCommentRepository,
     private val userDailyEmotionRepository: UserDailyEmotionRepository
 
 ) : ViewModel(){
@@ -85,19 +87,44 @@ class ProfileDetailsViewModel @Inject constructor(
 
         }
     }
-
     fun removeComment(commentId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _removeCommentResult.value = Resource.Loading()
-
             try {
-                val result = userCommentsRepository.removeCommentFromUser(commentId)
-                _removeCommentResult.value = if (result.isSuccess) {
-                    Resource.Success(result.getOrNull() ?: false) // true dönerse işlem başarılı
+                val result = userCommentsRepository.getUserComments(authRepository.currentUser()!!.uid)
+                if (result.isSuccess) {
+                    result.map { comments ->
+                        var isDeleted = false // Yorumun silindiğini takip et
+
+                        // Her bir yorum üzerinde dön
+                        for ((_, comment) in comments) {
+                            if (comment.commentId == commentId) {
+                                println(comment.postId)
+                                val endResult = postCommentRepository.removeCommentFromPost(postId = comment.postId!! , commentId = comment.commentId)
+                                if (endResult.isSuccess) {
+                                    println("Yorum başarıyla silindi: $commentId")
+                                    isDeleted = true
+                                    break // Yorum bulundu ve silindi, döngüyü sonlandır
+                                } else {
+                                    println("Yorum silinemedi: $commentId")
+                                }
+                            }
+                        }
+
+                        // Yorum silindi mi diye kontrol et ve sonucu güncelle
+                        if (isDeleted) {
+                            _removeCommentResult.value = Resource.Success(true)
+                        } else {
+                            println("Yorum silinemedi: $commentId")
+                            _removeCommentResult.value = Resource.Failure("Yorum silinemedi")
+                        }
+                    }
                 } else {
-                    Resource.Failure("Yorum silinemedi.")
+                    println("getUserComments başarısız.")
+                    _removeCommentResult.value = Resource.Failure("Yorum silinemedi")
                 }
             } catch (e: Exception) {
+                println("Yorum silme işleminde hata: ${e.message}")
                 _removeCommentResult.value = Resource.Failure(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
         }
@@ -173,7 +200,11 @@ class ProfileDetailsViewModel @Inject constructor(
     fun formatTimestampToDate(timestamp: Any?): String {
         if (timestamp == null) return "Tarih bilinmiyor"
         return try {
-            val millis = (timestamp as? Long) ?: return "Geçersiz tarih"
+            val millis = when (timestamp) {
+                is com.google.firebase.Timestamp -> timestamp.toDate().time
+                is Long -> timestamp
+                else -> return "Geçersiz tarih"
+            }
             val date = java.util.Date(millis)
             val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
             formatter.format(date)

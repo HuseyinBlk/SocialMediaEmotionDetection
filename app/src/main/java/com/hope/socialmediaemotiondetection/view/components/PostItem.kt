@@ -88,9 +88,6 @@ fun PostItem(
         isLiked = initialLiked
     }
 
-    LaunchedEffect(postAddCommentResult) {
-        viewModel.fetchCommentsWithUsernames(postId = post.postId)
-    }
 
     Column(
         modifier = Modifier
@@ -230,10 +227,12 @@ fun PostItem(
 @Composable
 fun CommentSection(
     comments: List<CommentWithUsername>,
-    onCommentAdded: (comment: String) -> Unit
+    onCommentAdded: (comment: String) -> Unit,
 ) {
     var newComment by remember { mutableStateOf("") }
     var lastCommentTime by remember { mutableLongStateOf(0L) }
+    var currentTime: Long
+
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -268,7 +267,7 @@ fun CommentSection(
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
-                    val currentTime = System.currentTimeMillis()
+                    currentTime = System.currentTimeMillis()
                     if (newComment.isNotBlank() && currentTime - lastCommentTime > 5000 && newComment.length in 5..256) {
                         onCommentAdded(newComment)
                         newComment = ""

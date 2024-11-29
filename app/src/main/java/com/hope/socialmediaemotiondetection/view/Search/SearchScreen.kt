@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hope.socialmediaemotiondetection.model.result.Resource
 import com.hope.socialmediaemotiondetection.model.user.User
-import com.hope.socialmediaemotiondetection.view.ui.theme.DarkTextColor
 import com.hope.socialmediaemotiondetection.viewmodel.SearchViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

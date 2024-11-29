@@ -31,12 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.hope.socialmediaemotiondetection.R
 import com.hope.socialmediaemotiondetection.view.components.ActionButton
-import com.hope.socialmediaemotiondetection.view.ui.theme.PrimaryVioletDark
 import com.hope.socialmediaemotiondetection.view.ui.theme.getGradientBrush
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk1
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk2
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk3
-import com.hope.socialmediaemotiondetection.view.ui.theme.renk4
 
 @Composable
 fun InfoScreen(

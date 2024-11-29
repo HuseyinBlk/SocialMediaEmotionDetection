@@ -42,6 +42,10 @@ import com.hope.socialmediaemotiondetection.model.user.dailyEmotion.DailyEmotion
 import com.hope.socialmediaemotiondetection.view.components.SingleChoiceSegmentedButton
 import com.hope.socialmediaemotiondetection.view.ui.theme.SocialMediaEmotionDetectionTheme
 import com.hope.socialmediaemotiondetection.viewmodel.ProfileDetailsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
@@ -296,8 +300,12 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                 1 -> {
                     when (userCommentsResult) {
                         is Resource.Loading -> {
-                            item {
-                                Text("Yorumlar yükleniyor...", modifier = Modifier.padding(16.dp))
+
+                            CoroutineScope(Dispatchers.Main).launch {
+                                item {
+                                    Text("Yorumlar yükleniyor...", modifier = Modifier.padding(16.dp))
+                                }
+                                delay(1000)
                             }
                         }
 
@@ -328,7 +336,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                                 modifier = Modifier.weight(1f)
                                             ) {
                                                 Text(
-                                                    text = comment.content,
+                                                    text = comment.content ?: "",
                                                     style = MaterialTheme.typography.bodyLarge,
                                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                                     modifier = Modifier.padding(bottom = 8.dp)
@@ -344,7 +352,7 @@ fun UserProfileScreen(viewModel: ProfileDetailsViewModel = hiltViewModel()) {
                                             }
                                             IconButton(
                                                 onClick = {
-                                                    viewModel.removeComment(commentId = comment.commentId)
+                                                    viewModel.removeComment(commentId = comment.commentId ?: "")
                                                 }
                                             ) {
                                                 Icon(
